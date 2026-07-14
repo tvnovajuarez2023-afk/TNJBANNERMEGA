@@ -703,6 +703,19 @@
             font-size: 2rem;
             font-weight: 700;
         }
+        .futebol-overlay .conteudo .info-central .data-jogo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #FFC107;
+            text-shadow: 0 0 20px rgba(255,193,7,0.5);
+            letter-spacing: 1px;
+            background: rgba(0,0,0,0.4);
+            padding: 0.1rem 1.2rem;
+            border-radius: 30px;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,193,7,0.3);
+            margin-top: 0.2rem;
+        }
         .futebol-overlay .conteudo .info-central .canal {
             font-size: 1.2rem;
             font-weight: 600;
@@ -754,6 +767,57 @@
             white-space: nowrap;
         }
         .upload-imagem-area .btn-upload:hover { background: #136a38; }
+
+        /* ===== OCULTAR NOME DA IMAGEM NO BANNER ===== */
+        #imagem-banner-texto {
+            display: none !important;
+        }
+
+        /* ===== NOVOS ESTILOS PARA CONTROLES DE POSIÇÃO ===== */
+        .campo-ajustes {
+            grid-column: span 2;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.3rem;
+            padding: 0.5rem;
+            background: rgba(255,255,255,0.05);
+            border-radius: 0.5rem;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .campo-ajustes .ajuste-item {
+            flex: 1;
+            min-width: 140px;
+        }
+        .campo-ajustes .ajuste-item label {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.7rem;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 0.2rem;
+        }
+        .campo-ajustes .ajuste-item input[type="range"] {
+            width: 100%;
+            height: 4px;
+            -webkit-appearance: none;
+            background: #444;
+            border-radius: 10px;
+            padding: 0;
+        }
+        .campo-ajustes .ajuste-item input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            background: #FFC107;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .campo-ajustes .ajuste-item .valor {
+            color: #FFC107;
+            font-size: 0.7rem;
+            font-weight: 700;
+            margin-left: 0.3rem;
+        }
     </style>
 </head>
 <body class="bg-gray-50 font-sans text-gray-800">
@@ -946,10 +1010,11 @@
 
                             <!-- ===== OVERLAY DE FUTEBOL ===== -->
                             <div id="futebol-overlay" class="futebol-overlay">
-                                <div class="conteudo">
+                                <div class="conteudo" id="futebol-conteudo">
                                     <img id="futebol-logo-esq" class="logo-time" src="" alt="Logo Esquerda" style="display:none;" />
-                                    <div class="info-central">
+                                    <div class="info-central" id="futebol-info-central">
                                         <span class="hora" id="futebol-hora">--:--</span>
+                                        <span class="data-jogo" id="futebol-data">--/--/----</span>
                                         <span class="canal" id="futebol-canal">Canal</span>
                                     </div>
                                     <img id="futebol-logo-dir" class="logo-time" src="" alt="Logo Direita" style="display:none;" />
@@ -984,8 +1049,7 @@
 
                                 <div id="rodape-banner" class="text-center flex flex-col items-center gap-1">
                                     <div id="tags-container" class="flex flex-wrap justify-center gap-1">
-                                        <span class="tag-lancamento">🌟 Lançamento</span>
-                                        <span class="tag-lancamento">🔥 Novo</span>
+                                        <!-- Tags serão inseridas dinamicamente -->
                                     </div>
                                     <div id="item-banner-info" class="flex flex-wrap justify-center gap-1 mt-1">
                                         <span id="imagem-banner-texto" class="banner-item-info hidden"></span>
@@ -1043,10 +1107,27 @@
                                 <span class="placeholder">Logo</span>
                             </div>
                         </div>
+
+                        <!-- NOVOS CONTROLES DE POSIÇÃO -->
+                        <div class="campo-ajustes">
+                            <div class="ajuste-item">
+                                <label>Distância entre logos <span class="valor" id="distancia-val">1.5</span></label>
+                                <input type="range" id="distancia-logos" min="0" max="5" step="0.1" value="1.5" />
+                            </div>
+                            <div class="ajuste-item">
+                                <label>Posição vertical <span class="valor" id="vertical-val">0</span></label>
+                                <input type="range" id="vertical-logos" min="-50" max="50" step="1" value="0" />
+                            </div>
+                        </div>
+
                         <div class="campo-info">
                             <div>
                                 <label>Horário do Jogo</label>
                                 <input type="text" id="horario-jogo" placeholder="Ex: 16:00" />
+                            </div>
+                            <div>
+                                <label>Data do Jogo</label>
+                                <input type="text" id="data-jogo" placeholder="Ex: 25/07/2026" />
                             </div>
                             <div>
                                 <label>Canal de Transmissão</label>
@@ -1065,7 +1146,7 @@
                     <button id="btn-aplicar-url" class="btn-aplicar-url">Aplicar URL</button>
                 </div>
 
-                <!-- ===== NOVO: UPLOAD DE IMAGEM DO APARELHO ===== -->
+                <!-- ===== UPLOAD DE IMAGEM DO APARELHO ===== -->
                 <div class="upload-imagem-area">
                     <span class="label-upload"><i class="fa fa-upload"></i> Selecionar imagem do aparelho:</span>
                     <input type="file" id="upload-imagem-local" accept="image/*" />
@@ -1431,17 +1512,28 @@
             const previewEsquerda = document.getElementById('preview-esquerda');
             const previewDireita = document.getElementById('preview-direita');
             const horarioJogo = document.getElementById('horario-jogo');
+            const dataJogo = document.getElementById('data-jogo');
             const canalJogo = document.getElementById('canal-jogo');
             const btnAdicionarFutebol = document.getElementById('btn-adicionar-futebol');
             const futebolOverlay = document.getElementById('futebol-overlay');
+            const futebolConteudo = document.getElementById('futebol-conteudo');
             const futebolLogoEsq = document.getElementById('futebol-logo-esq');
             const futebolLogoDir = document.getElementById('futebol-logo-dir');
             const futebolHora = document.getElementById('futebol-hora');
+            const futebolData = document.getElementById('futebol-data');
             const futebolCanal = document.getElementById('futebol-canal');
+            const futebolInfoCentral = document.getElementById('futebol-info-central');
+
+            // NOVOS CONTROLES DE POSIÇÃO
+            const distanciaLogos = document.getElementById('distancia-logos');
+            const verticalLogos = document.getElementById('vertical-logos');
+            const distanciaVal = document.getElementById('distancia-val');
+            const verticalVal = document.getElementById('vertical-val');
 
             let imagemSelecionada = null;
             let logosFutebol = { esquerda: null, direita: null };
             let horario = '';
+            let data = '';
             let canal = '';
 
             // ===== CONTROLES DE TAMANHO =====
@@ -1554,8 +1646,7 @@
                 }
 
                 imagemSelecionada = { titulo: titulo || 'Imagem' };
-                imagemBannerTexto.textContent = '🖼️ ' + (titulo || 'Imagem');
-                imagemBannerTexto.classList.remove('hidden');
+                imagemBannerTexto.classList.add('hidden');
                 atualizarBanner();
             }
 
@@ -1611,7 +1702,7 @@
                 }
             });
 
-            // ===== FUNÇÃO UPLOAD IMAGEM LOCAL (ADICIONA À GALERIA E APLICA AO BANNER) =====
+            // ===== FUNÇÃO UPLOAD IMAGEM LOCAL =====
             uploadImagemLocal.addEventListener('change', function(e) {
                 const file = e.target.files[0];
                 if (!file) return;
@@ -1620,20 +1711,35 @@
                     const dataUrl = event.target.result;
                     const nome = file.name.replace(/\.[^/.]+$/, '') + ' (upload)';
                     
-                    // Adiciona à lista de imagens (para ficar na galeria)
                     imagens.push({ nome: nome, url: dataUrl });
-                    
-                    // Aplica ao banner
                     aplicarImagemNoBanner(dataUrl, nome);
-                    
-                    // Recarrega a galeria para mostrar a nova imagem
                     popularGaleria();
-                    
                     mostrarToast('Imagem adicionada à galeria e aplicada ao banner!');
                 };
                 reader.readAsDataURL(file);
-                this.value = ''; // permite re-selecionar o mesmo arquivo
+                this.value = '';
             });
+
+            // ===== FUNÇÃO ATUALIZAR POSIÇÃO DAS LOGOS NO OVERLAY =====
+            function atualizarPosicaoLogos() {
+                const gap = parseFloat(distanciaLogos.value);
+                const vertical = parseFloat(verticalLogos.value);
+                distanciaVal.textContent = gap.toFixed(1);
+                verticalVal.textContent = vertical;
+
+                // Aplica o gap no container .conteudo
+                if (futebolConteudo) {
+                    futebolConteudo.style.gap = gap + 'rem';
+                }
+                // Aplica o deslocamento vertical no info-central (transform)
+                if (futebolInfoCentral) {
+                    futebolInfoCentral.style.transform = `translateY(${vertical}px)`;
+                }
+            }
+
+            // Event listeners para os sliders
+            distanciaLogos.addEventListener('input', atualizarPosicaoLogos);
+            verticalLogos.addEventListener('input', atualizarPosicaoLogos);
 
             // ===== FUNÇÃO ATUALIZAR BANNER =====
             function atualizarBanner() {
@@ -1677,6 +1783,7 @@
                     numeroEl.style.fontSize = (baseContatoSize * contatoScale * 0.95) + 'px';
                 }
 
+                // Tags
                 const tagsList = document.querySelectorAll('#lista-lancamentos .tag-item');
                 const tagTexts = [];
                 tagsList.forEach(tag => {
@@ -1684,21 +1791,12 @@
                     tagTexts.push(text);
                 });
                 tagsContainer.innerHTML = '';
-                if (tagTexts.length === 0) {
-                    ['🌟 Lançamento', '🔥 Novo'].forEach(text => {
-                        const span = document.createElement('span');
-                        span.className = 'tag-lancamento';
-                        span.textContent = text;
-                        tagsContainer.appendChild(span);
-                    });
-                } else {
-                    tagTexts.forEach(text => {
-                        const span = document.createElement('span');
-                        span.className = 'tag-lancamento';
-                        span.textContent = text;
-                        tagsContainer.appendChild(span);
-                    });
-                }
+                tagTexts.forEach(text => {
+                    const span = document.createElement('span');
+                    span.className = 'tag-lancamento';
+                    span.textContent = text;
+                    tagsContainer.appendChild(span);
+                });
                 const newTags = document.querySelectorAll('#tags-container .tag-lancamento');
                 const baseTagSize = Math.min(banner.clientWidth || 400, banner.clientHeight || 300) * 0.018;
                 newTags.forEach(tag => {
@@ -1799,9 +1897,10 @@
                 previewLogoComRemocao(this, previewDireita, 'direita');
             });
 
-            // ===== ADICIONAR FUTEBOL AO BANNER (OVERLAY) =====
+            // ===== ADICIONAR FUTEBOL AO BANNER (OVERLAY) com DATA =====
             btnAdicionarFutebol.addEventListener('click', function() {
                 horario = horarioJogo.value.trim();
+                data = dataJogo.value.trim();
                 canal = canalJogo.value.trim();
 
                 if (!logosFutebol.esquerda && !logosFutebol.direita) {
@@ -1822,9 +1921,12 @@
                     futebolLogoDir.style.display = 'none';
                 }
                 futebolHora.textContent = horario || '--:--';
+                futebolData.textContent = data || '--/--/----';
                 futebolCanal.textContent = canal || 'Canal';
 
                 futebolOverlay.classList.add('active');
+                // Aplica posição atual
+                atualizarPosicaoLogos();
                 mostrarToast('Banner de futebol adicionado com sucesso!');
             });
 
@@ -1914,15 +2016,23 @@
                 previewEsquerda.innerHTML = '<span class="placeholder">Logo</span>';
                 previewDireita.innerHTML = '<span class="placeholder">Logo</span>';
                 horarioJogo.value = '';
+                dataJogo.value = '';
                 canalJogo.value = '';
                 logosFutebol = { esquerda: null, direita: null };
                 horario = '';
+                data = '';
                 canal = '';
                 futebolOverlay.classList.remove('active');
                 imagemSelecionada = null;
                 imagemBannerTexto.classList.add('hidden');
                 // Reset upload local
                 uploadImagemLocal.value = '';
+                // Reset sliders de posição
+                distanciaLogos.value = '1.5';
+                verticalLogos.value = '0';
+                distanciaVal.textContent = '1.5';
+                verticalVal.textContent = '0';
+                atualizarPosicaoLogos();
                 [tamanhoLogo, tamanhoTitulo, tamanhoDescricao, tamanhoContato, tamanhoTags].forEach(s => s.value = '100');
                 [tamanhoLogoVal, tamanhoTituloVal, tamanhoDescricaoVal, tamanhoContatoVal, tamanhoTagsVal].forEach(d => d
                     .textContent = '100%');
@@ -1988,6 +2098,8 @@
             banner.style.aspectRatio = '16 / 9';
             bannerWrapper.style.maxWidth = '900px';
             atualizarBanner();
+            // Inicializa posição das logos
+            atualizarPosicaoLogos();
 
             const inputsRealtime = [empresaInput, contatoInput, temaInput, descricaoInput,
                 posicaoLogo, posicaoContato, posicaoConteudo, alinhamentoTitulo
@@ -2014,7 +2126,7 @@
                 leitor.readAsDataURL(arquivo);
             });
 
-            console.log('TNJBANNER - com novas imagens e upload local adicionando à galeria!');
+            console.log('TNJBANNER - com controle de posição das logos no banner de futebol!');
         })();
     </script>
 </body>
