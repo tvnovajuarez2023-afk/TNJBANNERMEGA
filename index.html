@@ -1,0 +1,2021 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TNJBANNER - Gerador Profissional</title>
+    <script src="https://cdn.tailwindcss.com">
+    </script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js">
+    </script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { tnjdark: '#121212', tjnred: '#E50914', tjngold: '#FFC107', whatsapp: '#25D366' },
+                    fontFamily: { sans: ['Inter', 'Montserrat', 'sans-serif'] },
+                },
+            },
+        };
+    </script>
+    <style>
+        /* ===== TODOS OS ESTILOS ANTERIORES ===== */
+        * { transition: all 0.2s ease; }
+        .banner-shadow { box-shadow: 0 0 50px rgba(229,9,20,0.3); }
+        .text-shadow { text-shadow: 2px 2px 8px rgba(0,0,0,0.9); }
+        .gradient-tjn { background: linear-gradient(145deg, #0a0a0a 0%, #1a1a1a 100%); }
+        .banner-overlay { background: rgba(0,0,0,0.55); }
+        .tag-lancamento {
+            background: rgba(229,9,20,0.85);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 50px;
+            padding: 0.25rem 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #fff;
+            display: inline-block;
+            margin: 0.2rem;
+        }
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e1e1e;
+            color: #fff;
+            padding: 0.75rem 2rem;
+            border-radius: 50px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            font-weight: 600;
+            z-index: 999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease, transform 0.3s ease;
+            border-left: 4px solid #E50914;
+        }
+        .toast.show { opacity: 1; pointer-events: auto; transform: translateX(-50%) translateY(0); }
+        .logo-upload-area {
+            border: 2px dashed #ccc;
+            border-radius: 12px;
+            padding: 0.5rem;
+            text-align: center;
+            transition: border-color 0.3s;
+            background: #fafafa;
+        }
+        .logo-upload-area:hover { border-color: #E50914; }
+        .banner-layout-padrao .topo-banner { display: flex; justify-content: space-between; align-items: flex-start; }
+        .banner-layout-padrao .logo-area { order: 1; }
+        .banner-layout-padrao .contato-area { order: 2; }
+        .banner-layout-centro .topo-banner { display: flex; flex-direction: column; align-items: center; }
+        .banner-layout-centro .logo-area { order: 1; }
+        .banner-layout-centro .contato-area { order: 2; margin-top: 0.5rem; }
+        .banner-layout-direita .topo-banner { display: flex; justify-content: space-between; align-items: flex-start; flex-direction: row-reverse; }
+        .banner-layout-direita .logo-area { order: 1; }
+        .banner-layout-direita .contato-area { order: 2; }
+        .titulo-esquerda .meio-banner { text-align: left; align-items: flex-start; }
+        .titulo-centro .meio-banner { text-align: center; align-items: center; }
+        .titulo-direita .meio-banner { text-align: right; align-items: flex-end; }
+        .conteudo-topo .meio-banner { justify-content: flex-start; padding-top: 1rem; }
+        .conteudo-centro .meio-banner { justify-content: center; }
+        .conteudo-fundo .meio-banner { justify-content: flex-end; padding-bottom: 1rem; }
+        .whatsapp-icon {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-weight: 700;
+            color: #25D366;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+            background: transparent !important;
+            border: none !important;
+            padding: 0 !important;
+            box-shadow: none !important;
+        }
+        .whatsapp-icon i {
+            font-size: 1.6rem;
+            color: #25D366;
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            width: auto;
+            height: auto;
+        }
+        .whatsapp-icon .numero {
+            color: #fff;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            background: transparent !important;
+            padding: 0 !important;
+            border: none !important;
+            font-size: inherit;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+        }
+        .dispositivos-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3rem;
+            margin-top: 0.3rem;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+        .dispositivos-area:hover { opacity: 0.95; }
+        .dispositivos-area .legenda {
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #fff;
+            text-shadow: 0 1px 8px rgba(0,0,0,0.9);
+            background: rgba(0,0,0,0.3);
+            padding: 0.1rem 1rem;
+            border-radius: 20px;
+            backdrop-filter: blur(2px);
+        }
+        .dispositivos-icones {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+        }
+        .dispositivos-icones i {
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.6);
+            text-shadow: 0 0 10px rgba(0,0,0,0.8);
+            transition: all 0.2s;
+        }
+        .dispositivos-icones i:hover { color: #fff; transform: scale(1.1); }
+        .dispositivos-icones .legenda-icone {
+            font-size: 0.5rem;
+            color: rgba(255,255,255,0.5);
+            text-align: center;
+            display: block;
+            margin-top: 0.1rem;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+        }
+        .dispositivos-icones .item-dispositivo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.1rem;
+        }
+        .banner-footer-msg {
+            position: absolute;
+            bottom: 6px;
+            right: 12px;
+            color: rgba(255,255,255,0.3);
+            font-size: 0.5rem;
+            font-weight: 400;
+            letter-spacing: 0.3px;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+            z-index: 20;
+            pointer-events: none;
+            font-family: 'Inter', sans-serif;
+        }
+        .banner-footer-msg span {
+            background: rgba(0,0,0,0.3);
+            padding: 0.05rem 0.4rem;
+            border-radius: 12px;
+            backdrop-filter: blur(2px);
+        }
+        input, select, textarea {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            padding: 0.6rem 1rem;
+            width: 100%;
+            font-size: 0.95rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #E50914;
+            box-shadow: 0 0 0 3px rgba(229,9,20,0.15);
+        }
+        .btn-primary {
+            background: #E50914;
+            color: white;
+            font-weight: 600;
+            padding: 0.6rem 1.2rem;
+            border-radius: 0.75rem;
+            transition: background 0.2s, transform 0.1s;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-primary:hover { background: #c40812; }
+        .btn-primary:active { transform: scale(0.97); }
+        .btn-primary-outline {
+            background: transparent;
+            color: #E50914;
+            border: 2px solid #E50914;
+            font-weight: 600;
+            padding: 0.6rem 1.2rem;
+            border-radius: 0.75rem;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .btn-primary-outline:hover { background: #E50914; color: white; }
+        .btn-secondary {
+            background: #2d3748;
+            color: white;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 0.75rem;
+            transition: background 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-secondary:hover { background: #1a202c; }
+        .tag-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: #edf2f7;
+            padding: 0.25rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin: 0.2rem;
+        }
+        .tag-item .remove-tag {
+            cursor: pointer;
+            color: #e53e3e;
+            font-weight: bold;
+            font-size: 1rem;
+            line-height: 1;
+        }
+        .tag-item .remove-tag:hover { color: #c53030; }
+        #preview-conteudo {
+            margin-top: 1rem;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            background: #1a1a1a;
+            max-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #preview-conteudo video, #preview-conteudo img {
+            max-width: 100%;
+            max-height: 200px;
+            object-fit: contain;
+        }
+        .formato-option {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 50px;
+            background: #edf2f7;
+            cursor: pointer;
+            margin: 0.2rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        .formato-option:hover { background: #e2e8f0; }
+        .formato-option.active {
+            border-color: #E50914;
+            background: #fff;
+            color: #E50914;
+        }
+        .formato-option input { display: none; }
+        .banner-container { aspect-ratio: 16 / 9; }
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-content {
+            background: white;
+            border-radius: 1.5rem;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow: auto;
+            padding: 1.5rem;
+            position: relative;
+        }
+        .modal-content img {
+            max-width: 100%;
+            max-height: 70vh;
+            border-radius: 0.75rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+        .modal-close {
+            position: absolute;
+            top: 0.5rem;
+            right: 1rem;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #333;
+            transition: color 0.2s;
+        }
+        .modal-close:hover { color: #E50914; }
+        .btn-download-video { background: #dc2626; color: white; }
+        .btn-download-video:hover { background: #b91c1c; }
+        .grid-2-col { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+        .video-loader {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #1a1a1a;
+            border-radius: 0.75rem;
+            color: white;
+        }
+        .video-loader.active { display: flex; }
+        .spinner {
+            width: 30px;
+            height: 30px;
+            border: 4px solid rgba(255,255,255,0.2);
+            border-top-color: #E50914;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .progress-bar {
+            width: 200px;
+            height: 6px;
+            background: #333;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .progress-bar .fill {
+            height: 100%;
+            width: 0%;
+            background: #E50914;
+            border-radius: 10px;
+            transition: width 0.3s;
+        }
+        .size-control {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .size-control label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            min-width: 90px;
+        }
+        .size-control input[type="range"] {
+            flex: 1;
+            height: 6px;
+            -webkit-appearance: none;
+            background: #e2e8f0;
+            border-radius: 10px;
+            padding: 0;
+        }
+        .size-control input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #E50914;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .size-control .value-display {
+            min-width: 35px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #E50914;
+        }
+        .duracao-aviso {
+            display: none;
+            color: #e53e3e;
+            font-size: 0.85rem;
+            margin-top: 0.3rem;
+            font-weight: 600;
+        }
+        .duracao-aviso.show { display: block; }
+        .duracao-info { color: #2d3748; font-size: 0.8rem; margin-top: 0.2rem; }
+        .btn-salvar {
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            padding: 0.7rem 1.5rem;
+            border-radius: 0.75rem;
+            color: white;
+            font-size: 1rem;
+            min-width: 160px;
+        }
+        .btn-salvar:hover { transform: scale(1.03); filter: brightness(1.1); }
+        .btn-salvar:active { transform: scale(0.95); }
+        .btn-salvar-imagem { background: #2d7d46; }
+        .btn-salvar-imagem:hover { background: #1f5f33; }
+        .btn-salvar-video { background: #b91c1c; }
+        .btn-salvar-video:hover { background: #991515; }
+
+        /* ===== GALERIA ===== */
+        .secao-galeria {
+            margin-top: 0.8rem;
+        }
+        .secao-galeria .titulo-secao {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 0.3rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+        }
+        .secao-galeria .titulo-secao i { font-size: 0.8rem; opacity: 0.7; }
+        .secao-galeria .titulo-secao .contador {
+            font-size: 0.6rem;
+            font-weight: 400;
+            color: rgba(255,255,255,0.4);
+            background: rgba(255,255,255,0.08);
+            padding: 0.05rem 0.6rem;
+            border-radius: 12px;
+        }
+        .galeria-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            justify-content: flex-start;
+            max-height: 350px;
+            overflow-y: auto;
+            padding: 0.3rem;
+            background: rgba(255,255,255,0.03);
+            border-radius: 0.5rem;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .galeria-container::-webkit-scrollbar { width: 4px; }
+        .galeria-container::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 10px; }
+        .item-galeria {
+            width: 65px;
+            height: 65px;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+            flex-shrink: 0;
+            background: #2a2a2a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .item-galeria:hover { border-color: #E50914; transform: scale(1.05); }
+        .item-galeria img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .item-galeria .nome-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.7);
+            color: #fff;
+            font-size: 0.45rem;
+            text-align: center;
+            padding: 0.1rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-weight: 500;
+        }
+        .url-imagem-input {
+            background: #2a2a2a;
+            color: #fff;
+            border: 1px solid #444;
+            padding: 0.3rem 0.6rem;
+            border-radius: 0.5rem;
+            flex: 2;
+            font-size: 0.75rem;
+        }
+        .url-imagem-input:focus { outline: none; border-color: #E50914; }
+        .url-imagem-input::placeholder { color: rgba(255,255,255,0.3); }
+        .btn-aplicar-url {
+            background: #1a8a4a;
+            color: white;
+            border: none;
+            padding: 0.3rem 0.8rem;
+            border-radius: 0.5rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .btn-aplicar-url:hover { background: #136a38; }
+
+        /* ===== ESTILO PARA BANNER DE FUTEBOL ===== */
+        .futebol-container {
+            background: #1a1a1a;
+            border-radius: 1rem;
+            padding: 1rem;
+            margin-top: 1rem;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .futebol-container .cabecalho {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 0.8rem;
+        }
+        .futebol-container .cabecalho h3 {
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .futebol-container .cabecalho h3 i { color: #FFC107; }
+        .futebol-container .campos-futebol {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+        }
+        .futebol-container .campo-logo {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+        .futebol-container .campo-logo label {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .futebol-container .campo-logo input[type="file"] {
+            background: #2a2a2a;
+            color: #fff;
+            border: 1px solid #444;
+            border-radius: 0.5rem;
+            padding: 0.3rem;
+            font-size: 0.7rem;
+            width: 100%;
+        }
+        .futebol-container .campo-logo input[type="file"]::-webkit-file-upload-button {
+            background: #E50914;
+            color: #fff;
+            border: none;
+            padding: 0.2rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .futebol-container .campo-info {
+            grid-column: span 2;
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .futebol-container .campo-info > div {
+            flex: 1;
+            min-width: 120px;
+        }
+        .futebol-container .campo-info label {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.7rem;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 0.2rem;
+        }
+        .futebol-container .campo-info input {
+            background: #2a2a2a;
+            color: #fff;
+            border: 1px solid #444;
+            border-radius: 0.5rem;
+            padding: 0.4rem 0.6rem;
+            width: 100%;
+            font-size: 0.8rem;
+        }
+        .futebol-container .campo-info input:focus { outline: none; border-color: #E50914; }
+        .futebol-container .campo-info input::placeholder { color: rgba(255,255,255,0.3); }
+        .logo-preview-futebol {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #2a2a2a;
+            border: 1px solid #444;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 0.2rem;
+        }
+        .logo-preview-futebol img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .logo-preview-futebol .placeholder {
+            color: rgba(255,255,255,0.3);
+            font-size: 0.5rem;
+        }
+        .btn-adicionar-futebol {
+            background: #FFC107;
+            color: #1a1a1a;
+            font-weight: 700;
+            padding: 0.4rem 1.2rem;
+            border-radius: 0.5rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            margin-top: 0.5rem;
+        }
+        .btn-adicionar-futebol:hover { background: #e6a800; transform: scale(1.02); }
+        .btn-adicionar-futebol:active { transform: scale(0.95); }
+        .banner-futebol-info {
+            color: rgba(255,215,0,0.7);
+            font-size: 0.7rem;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+            padding: 0.1rem 0.5rem;
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            backdrop-filter: blur(2px);
+            display: inline-block;
+        }
+        .futebol-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 15;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(2px);
+            border-radius: inherit;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        .futebol-overlay.active {
+            opacity: 1;
+            pointer-events: none;
+        }
+        .futebol-overlay .conteudo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            padding: 1rem;
+            width: 100%;
+            height: 100%;
+        }
+        .futebol-overlay .conteudo .logo-time {
+            height: 60%;
+            max-height: 200px;
+            object-fit: contain;
+        }
+        .futebol-overlay .conteudo .info-central {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.9);
+        }
+        .futebol-overlay .conteudo .info-central .hora {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        .futebol-overlay .conteudo .info-central .canal {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #FFC107;
+        }
+
+        /* ===== NOVO: INPUT DE UPLOAD DE IMAGEM ===== */
+        .upload-imagem-area {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-top: 0.5rem;
+        }
+        .upload-imagem-area input[type="file"] {
+            background: #2a2a2a;
+            color: #fff;
+            border: 1px solid #444;
+            border-radius: 0.5rem;
+            padding: 0.3rem;
+            font-size: 0.7rem;
+            flex: 1;
+            min-width: 150px;
+        }
+        .upload-imagem-area input[type="file"]::-webkit-file-upload-button {
+            background: #E50914;
+            color: #fff;
+            border: none;
+            padding: 0.2rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .upload-imagem-area .label-upload {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .upload-imagem-area .btn-upload {
+            background: #1a8a4a;
+            color: white;
+            border: none;
+            padding: 0.3rem 0.8rem;
+            border-radius: 0.5rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .upload-imagem-area .btn-upload:hover { background: #136a38; }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800">
+
+    <!-- Toast -->
+    <div id="toast" class="toast">✨ Banner atualizado!</div>
+
+    <!-- Modal de resultado -->
+    <div id="modal-resultado" class="modal-overlay">
+        <div class="modal-content">
+            <span class="modal-close" id="modal-close">&times;</span>
+            <h3 class="text-xl font-bold mb-4 text-center">Banner Gerado com Sucesso!</h3>
+            <div id="modal-imagem-container" class="flex justify-center">
+                <img id="modal-imagem" src="" alt="Banner gerado" />
+            </div>
+            <div class="flex justify-center gap-4 mt-4 flex-wrap">
+                <button id="fechar-modal" class="btn-secondary px-6 py-2">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cabeçalho -->
+    <header class="gradient-tjn text-white py-4 shadow-2xl">
+        <div class="container mx-auto px-4 flex justify-between items-center flex-wrap gap-2">
+            <div class="flex items-center gap-3">
+                <i class="fa fa-picture-o text-tjnred text-3xl"></i>
+                <h1 class="text-2xl font-extrabold tracking-tight">TNJ<span class="text-tjnred">BANNER</span></h1>
+            </div>
+            <p class="text-sm text-gray-300 hidden sm:block">Gerador Profissional</p>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+            <!-- Painel de Configurações -->
+            <div class="lg:col-span-1 bg-white rounded-2xl shadow-xl p-6 border border-gray-200/60">
+                <h2 class="text-xl font-bold mb-6 text-tnjdark border-b pb-2 flex items-center gap-2">
+                    <i class="fa fa-sliders text-tjnred"></i> Configurações
+                </h2>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-1">Empresa / Marca</label>
+                    <input type="text" id="empresa" placeholder="TV Nova Juarez" />
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-1">Telefone / Contato</label>
+                    <input type="text" id="contato" placeholder="(21) 97751-9001" />
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-1">Logo Marca</label>
+                    <div class="logo-upload-area">
+                        <input type="file" id="logo" accept="image/*" class="w-full text-sm text-gray-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-tjnred file:text-white hover:file:bg-red-700 cursor-pointer" />
+                    </div>
+                    <p class="text-xs text-gray-400 mt-1"><i class="fa fa-magic"></i> Fundo removido automaticamente</p>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-1">Título do Banner</label>
+                    <input type="text" id="tema" placeholder="Ex: Lançamento Especial" />
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-1">Descrição</label>
+                    <textarea id="descricao" rows="2" placeholder="Uma frase impactante..." class="resize-none"></textarea>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-1">📐 Formato do Banner</label>
+                    <div id="formatos" class="flex flex-wrap gap-1">
+                        <label class="formato-option active" data-ratio="16/9"><input type="radio" name="formato" value="16/9" checked /> 16:9</label>
+                        <label class="formato-option" data-ratio="1/1"><input type="radio" name="formato" value="1/1" /> 1:1</label>
+                        <label class="formato-option" data-ratio="9/16"><input type="radio" name="formato" value="9/16" /> 9:16</label>
+                        <label class="formato-option" data-ratio="4/3"><input type="radio" name="formato" value="4/3" /> 4:3</label>
+                        <label class="formato-option" data-ratio="21/9"><input type="radio" name="formato" value="21/9" /> 21:9</label>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-1">Posição da Logo</label>
+                    <select id="posicao-logo" class="w-full">
+                        <option value="topo-esquerda">Topo Esquerda</option>
+                        <option value="topo-centro">Topo Centro</option>
+                        <option value="topo-direita">Topo Direita</option>
+                        <option value="meio-esquerda">Meio Esquerda</option>
+                        <option value="meio-centro" selected>Meio Centro</option>
+                        <option value="meio-direita">Meio Direita</option>
+                        <option value="rodape-esquerda">Rodapé Esquerda</option>
+                        <option value="rodape-centro">Rodapé Centro</option>
+                        <option value="rodape-direita">Rodapé Direita</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-1">Posição do Contato</label>
+                    <select id="posicao-contato" class="w-full">
+                        <option value="topo-esquerda">Topo Esquerda</option>
+                        <option value="topo-centro">Topo Centro</option>
+                        <option value="topo-direita" selected>Topo Direita</option>
+                        <option value="meio-esquerda">Meio Esquerda</option>
+                        <option value="meio-centro">Meio Centro</option>
+                        <option value="meio-direita">Meio Direita</option>
+                        <option value="rodape-esquerda">Rodapé Esquerda</option>
+                        <option value="rodape-centro">Rodapé Centro</option>
+                        <option value="rodape-direita">Rodapé Direita</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-1">Posição Vertical do Conteúdo</label>
+                    <select id="posicao-conteudo" class="w-full">
+                        <option value="topo">Topo</option>
+                        <option value="centro" selected>Centro</option>
+                        <option value="fundo">Fundo</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-1">Alinhamento do Título</label>
+                    <select id="alinhamento-titulo" class="w-full">
+                        <option value="centro">Centralizado</option>
+                        <option value="esquerda">Esquerda</option>
+                        <option value="direita">Direita</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-1">🏷️ Lançamentos / Tags</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="input-lancamento" placeholder="Ex: Em breve" class="flex-1" />
+                        <button id="add-lancamento" class="btn-primary px-4 py-2 text-sm">Adicionar</button>
+                    </div>
+                    <div id="lista-lancamentos" class="mt-2 flex flex-wrap gap-1"></div>
+                </div>
+
+                <hr class="my-4 border-gray-200" />
+                <h3 class="text-sm font-bold text-tnjdark mb-3">Ajuste de Tamanhos</h3>
+
+                <div class="size-control mb-3">
+                    <label>Logo</label>
+                    <input type="range" id="tamanho-logo" min="30" max="200" value="100" />
+                    <span class="value-display" id="tamanho-logo-val">100%</span>
+                </div>
+                <div class="size-control mb-3">
+                    <label>Título</label>
+                    <input type="range" id="tamanho-titulo" min="50" max="200" value="100" />
+                    <span class="value-display" id="tamanho-titulo-val">100%</span>
+                </div>
+                <div class="size-control mb-3">
+                    <label>Descrição</label>
+                    <input type="range" id="tamanho-descricao" min="50" max="200" value="100" />
+                    <span class="value-display" id="tamanho-descricao-val">100%</span>
+                </div>
+                <div class="size-control mb-3">
+                    <label>Contato</label>
+                    <input type="range" id="tamanho-contato" min="50" max="200" value="100" />
+                    <span class="value-display" id="tamanho-contato-val">100%</span>
+                </div>
+                <div class="size-control mb-3">
+                    <label>Tags</label>
+                    <input type="range" id="tamanho-tags" min="50" max="200" value="100" />
+                    <span class="value-display" id="tamanho-tags-val">100%</span>
+                </div>
+
+                <div class="mt-4">
+                    <button id="gerar" class="btn-primary py-3 flex items-center justify-center gap-2 text-base w-full">
+                        <i class="fa fa-image"></i> Gerar Banner
+                    </button>
+                </div>
+
+                <div class="mt-6 flex flex-col gap-3">
+                    <button id="salvar-imagem" class="btn-salvar btn-salvar-imagem">
+                        <i class="fa fa-image"></i> Salvar Imagem
+                    </button>
+                    <button id="resetar" class="btn-secondary py-2.5 flex items-center justify-center gap-2 rounded-lg transition">
+                        <i class="fa fa-refresh"></i> Limpar
+                    </button>
+                </div>
+            </div>
+
+            <!-- Área de Pré-visualização do Banner -->
+            <div class="lg:col-span-2">
+                <h2 class="text-xl font-bold mb-6 text-tnjdark border-b pb-2 flex items-center gap-2">
+                    <i class="fa fa-eye text-tjnred"></i> Pré-visualização
+                </h2>
+
+                <div id="preview-container" class="flex justify-center items-center bg-gray-200/70 rounded-2xl p-4 min-h-[400px] border border-white/50 shadow-inner">
+                    <div id="banner-wrapper" class="w-full max-w-[900px]">
+                        <div id="banner" class="banner-container w-full rounded-2xl banner-shadow overflow-hidden relative bg-gradient-to-br from-gray-900 to-gray-800">
+
+                            <div class="absolute inset-0 w-full h-full" id="midia-container">
+                                <!-- Imagem de fundo padrão -->
+                            </div>
+                            <div class="absolute inset-0 banner-overlay"></div>
+
+                            <!-- ===== OVERLAY DE FUTEBOL ===== -->
+                            <div id="futebol-overlay" class="futebol-overlay">
+                                <div class="conteudo">
+                                    <img id="futebol-logo-esq" class="logo-time" src="" alt="Logo Esquerda" style="display:none;" />
+                                    <div class="info-central">
+                                        <span class="hora" id="futebol-hora">--:--</span>
+                                        <span class="canal" id="futebol-canal">Canal</span>
+                                    </div>
+                                    <img id="futebol-logo-dir" class="logo-time" src="" alt="Logo Direita" style="display:none;" />
+                                </div>
+                            </div>
+
+                            <div class="relative z-10 w-full h-full flex flex-col p-6 md:p-8">
+
+                                <div id="topo-banner" class="topo-banner flex justify-between items-start">
+                                    <div id="logo-area" class="logo-area flex items-center justify-center bg-white/10 rounded-xl border border-white/20 backdrop-blur-sm" style="width:100px; height:100px;">
+                                        <span class="text-white/50 text-xs">Logo</span>
+                                    </div>
+                                    <div id="contato-area" class="contato-area text-right">
+                                        <h3 id="banner-empresa" class="font-bold text-white text-shadow" style="font-size:1.2rem;">TV Nova Juarez</h3>
+                                        <div id="contato-whatsapp" class="mt-1">
+                                            <span class="whatsapp-icon">
+                                                <i class="fa fa-whatsapp"></i>
+                                                <span class="numero" id="banner-contato">(21) 97751-9001</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="meio-banner" class="meio-banner flex-1 flex flex-col justify-center items-center text-center">
+                                    <h2 id="banner-titulo" class="font-black text-white uppercase text-shadow leading-tight" style="font-size:2.5rem;">
+                                        Título do Banner
+                                    </h2>
+                                    <p id="banner-descricao" class="text-tjngold font-semibold text-shadow mt-2 max-w-lg" style="font-size:1.2rem;">
+                                        Descrição do conteúdo
+                                    </p>
+                                </div>
+
+                                <div id="rodape-banner" class="text-center flex flex-col items-center gap-1">
+                                    <div id="tags-container" class="flex flex-wrap justify-center gap-1">
+                                        <span class="tag-lancamento">🌟 Lançamento</span>
+                                        <span class="tag-lancamento">🔥 Novo</span>
+                                    </div>
+                                    <div id="item-banner-info" class="flex flex-wrap justify-center gap-1 mt-1">
+                                        <span id="imagem-banner-texto" class="banner-item-info hidden"></span>
+                                    </div>
+                                    <div class="dispositivos-area">
+                                        <span class="legenda">📱 Compatível com estes aparelhos</span>
+                                        <div class="dispositivos-icones">
+                                            <div class="item-dispositivo"><i class="fa fa-television"></i><span class="legenda-icone">TV</span></div>
+                                            <div class="item-dispositivo"><i class="fa fa-desktop"></i><span class="legenda-icone">PC</span></div>
+                                            <div class="item-dispositivo"><i class="fa fa-tablet"></i><span class="legenda-icone">Tablet</span></div>
+                                            <div class="item-dispositivo"><i class="fa fa-mobile"></i><span class="legenda-icone">Celular</span></div>
+                                            <div class="item-dispositivo"><i class="fa fa-video-camera"></i><span class="legenda-icone">Projetor</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="banner-footer-msg">
+                                <span>TNJBANNER • o gerador manual da tvnovajuarez</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="preview-conteudo" class="mt-4 bg-black rounded-xl overflow-hidden hidden"></div>
+
+                <!-- ===== GALERIA DE IMAGENS ===== -->
+                <div id="galerias-container">
+                    <div class="secao-galeria">
+                        <div class="titulo-secao">
+                            <span><i class="fa fa-image"></i> Imagens</span>
+                            <span class="contador" id="contador-imagens">0 imagens</span>
+                        </div>
+                        <div id="galeria-imagens" class="galeria-container"></div>
+                    </div>
+                </div>
+
+                <!-- ===== BANNER DE FUTEBOL ===== -->
+                <div class="futebol-container">
+                    <div class="cabecalho">
+                        <h3><i class="fa fa-soccer-ball-o"></i> Banner de Futebol</h3>
+                    </div>
+                    <div class="campos-futebol">
+                        <div class="campo-logo">
+                            <label>Logo Time da Esquerda</label>
+                            <input type="file" id="logo-esquerda" accept="image/*" />
+                            <div id="preview-esquerda" class="logo-preview-futebol">
+                                <span class="placeholder">Logo</span>
+                            </div>
+                        </div>
+                        <div class="campo-logo">
+                            <label>Logo Time da Direita</label>
+                            <input type="file" id="logo-direita" accept="image/*" />
+                            <div id="preview-direita" class="logo-preview-futebol">
+                                <span class="placeholder">Logo</span>
+                            </div>
+                        </div>
+                        <div class="campo-info">
+                            <div>
+                                <label>Horário do Jogo</label>
+                                <input type="text" id="horario-jogo" placeholder="Ex: 16:00" />
+                            </div>
+                            <div>
+                                <label>Canal de Transmissão</label>
+                                <input type="text" id="canal-jogo" placeholder="Ex: Sportv, Globo" />
+                            </div>
+                        </div>
+                    </div>
+                    <button id="btn-adicionar-futebol" class="btn-adicionar-futebol">
+                        <i class="fa fa-plus-circle"></i> Adicionar ao Banner
+                    </button>
+                </div>
+
+                <!-- ===== CAMPO DE URL MANUAL ===== -->
+                <div style="display:flex; gap:0.5rem; margin-top:0.8rem; flex-wrap:wrap; align-items:center;">
+                    <input type="url" id="url-imagem-manual" class="url-imagem-input" placeholder="Cole uma URL de imagem" />
+                    <button id="btn-aplicar-url" class="btn-aplicar-url">Aplicar URL</button>
+                </div>
+
+                <!-- ===== NOVO: UPLOAD DE IMAGEM DO APARELHO ===== -->
+                <div class="upload-imagem-area">
+                    <span class="label-upload"><i class="fa fa-upload"></i> Selecionar imagem do aparelho:</span>
+                    <input type="file" id="upload-imagem-local" accept="image/*" />
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <footer class="gradient-tjn text-white py-4 mt-12 border-t border-white/10">
+        <div class="container mx-auto px-4 text-center text-sm text-gray-400">
+            <p>TNJBANNER © 2026 · Gerador Profissional</p>
+        </div>
+    </footer>
+
+    <script>
+        (function() {
+            const { jsPDF } = window.jspdf;
+
+            // ===== IMAGENS (TODAS AS ANTERIORES + NOVAS) =====
+            const imagens = [
+                // --- IMAGENS EXISTENTES (mantidas) ---
+                { nome: "images-(61)", url: "https://i.postimg.cc/181jhTZ5/images-(61).jpg" },
+                { nome: "images-(60)", url: "https://i.postimg.cc/Jt9TZg0y/images-(60).jpg" },
+                { nome: "images-(59)", url: "https://i.postimg.cc/cgvm8MNX/images-(59).jpg" },
+                { nome: "images-(58)", url: "https://i.postimg.cc/qNpxGdTp/images-(58).jpg" },
+                { nome: "images-(57)", url: "https://i.postimg.cc/qzx8qZCm/images-(57).jpg" },
+                { nome: "images-(56)", url: "https://i.postimg.cc/DW8sCvYn/images-(56).jpg" },
+                { nome: "images-(55)", url: "https://i.postimg.cc/s1pWH0KY/images-(55).jpg" },
+                { nome: "images-(54)", url: "https://i.postimg.cc/rDptmyT9/images-(54).jpg" },
+                { nome: "images-(53)", url: "https://i.postimg.cc/67k7Ydv0/images-(53).jpg" },
+                { nome: "images-(52)", url: "https://i.postimg.cc/PNkyqDRF/images-(52).jpg" },
+                { nome: "images-(51)", url: "https://i.postimg.cc/HJy0YW09/images-(51).jpg" },
+                { nome: "images-(50)", url: "https://i.postimg.cc/Jtm38Lsc/images-(50).jpg" },
+                { nome: "download", url: "https://i.postimg.cc/PCBZRsGY/download.jpg" },
+                { nome: "images", url: "https://i.postimg.cc/y3YSZ79z/images.jpg" },
+                { nome: "images-(1)", url: "https://i.postimg.cc/Bj1PDY8t/images-(1).jpg" },
+                { nome: "images-(2)", url: "https://i.postimg.cc/WtbDSbFR/images-(2).jpg" },
+                { nome: "images-(3)", url: "https://i.postimg.cc/xk28m0D6/images-(3).jpg" },
+                { nome: "images-(5)", url: "https://i.postimg.cc/fV4R4wbp/images-(5).jpg" },
+                { nome: "images-(4)", url: "https://i.postimg.cc/cvMZVw23/images-(4).jpg" },
+                { nome: "images-(6)", url: "https://i.postimg.cc/RW9xQqhf/images-(6).jpg" },
+                { nome: "images-(7)", url: "https://i.postimg.cc/LnKc2htd/images-(7).jpg" },
+                { nome: "images-(8)", url: "https://i.postimg.cc/CZQ2tKhn/images-(8).jpg" },
+                { nome: "images-(9)", url: "https://i.postimg.cc/1n1dPjFz/images-(9).jpg" },
+                { nome: "images-(10)", url: "https://i.postimg.cc/JD8pSBwj/images-(10).jpg" },
+                { nome: "images-(11)", url: "https://i.postimg.cc/w7r0gr86/images-(11).jpg" },
+                { nome: "images-(12)", url: "https://i.postimg.cc/ZCWx7LBm/images-(12).jpg" },
+                { nome: "images-(49)", url: "https://i.postimg.cc/SjJ9kxy2/images-(49).jpg" },
+                { nome: "images-(48)", url: "https://i.postimg.cc/64vTRT3V/images-(48).jpg" },
+                { nome: "images-(47)", url: "https://i.postimg.cc/FYZz0M9M/images-(47).jpg" },
+                { nome: "images-(46)", url: "https://i.postimg.cc/PpB5th4L/images-(46).jpg" },
+                { nome: "images-(45)", url: "https://i.postimg.cc/0bGyqTJG/images-(45).jpg" },
+                { nome: "images-(44)", url: "https://i.postimg.cc/1VhskBmK/images-(44).jpg" },
+                { nome: "images-(43)", url: "https://i.postimg.cc/CRPYhSMm/images-(43).jpg" },
+                { nome: "images-(42)", url: "https://i.postimg.cc/qNRVZScd/images-(42).jpg" },
+                { nome: "images-(41)", url: "https://i.postimg.cc/gLDQgHnh/images-(41).jpg" },
+                { nome: "images-(40)", url: "https://i.postimg.cc/SnJQzJv7/images-(40).jpg" },
+                { nome: "images-(13)", url: "https://i.postimg.cc/hXgbDRyy/images-(13).jpg" },
+                { nome: "images-(14)", url: "https://i.postimg.cc/kRKKCTxD/images-(14).jpg" },
+                { nome: "images-(15)", url: "https://i.postimg.cc/mck9kLQp/images-(15).jpg" },
+                { nome: "images-(16)", url: "https://i.postimg.cc/mt4FMNY6/images-(16).jpg" },
+                { nome: "images-(17)", url: "https://i.postimg.cc/GHbH93R5/images-(17).jpg" },
+                { nome: "images-(18)", url: "https://i.postimg.cc/LJbXyz1W/images-(18).jpg" },
+                { nome: "images-(19)", url: "https://i.postimg.cc/BP4Q8prn/images-(19).jpg" },
+                { nome: "images-(20)", url: "https://i.postimg.cc/pyJKs6X0/images-(20).jpg" },
+                { nome: "images-(21)", url: "https://i.postimg.cc/TybDgk4Q/images-(21).jpg" },
+                { nome: "download-(1)", url: "https://i.postimg.cc/fJgtFn4C/download-(1).jpg" },
+                { nome: "images-(39)", url: "https://i.postimg.cc/vc6bQpxF/images-(39).jpg" },
+                { nome: "images-(38)", url: "https://i.postimg.cc/vD4dzpzc/images-(38).jpg" },
+                { nome: "images-(37)", url: "https://i.postimg.cc/KRtwpF39/images-(37).jpg" },
+                { nome: "images-(36)", url: "https://i.postimg.cc/KK8WYMpz/images-(36).jpg" },
+                { nome: "images-(35)", url: "https://i.postimg.cc/cKvcjM53/images-(35).jpg" },
+                { nome: "download-(3)", url: "https://i.postimg.cc/kBwFgh0f/download-(3).jpg" },
+                { nome: "images-(34)", url: "https://i.postimg.cc/47zpk8v4/images-(34).jpg" },
+                { nome: "images-(23)", url: "https://i.postimg.cc/Ln4QDfRv/images-(23).jpg" },
+                { nome: "images-(24)", url: "https://i.postimg.cc/mc9mky3V/images-(24).jpg" },
+                { nome: "images-(25)", url: "https://i.postimg.cc/D4wQrrsV/images-(25).jpg" },
+                { nome: "images-(26)", url: "https://i.postimg.cc/PPcbD8qr/images-(26).jpg" },
+                { nome: "images-(30)", url: "https://i.postimg.cc/LqBmc7Q1/images-(30).jpg" },
+                { nome: "images-(29)", url: "https://i.postimg.cc/DSwDvNzc/images-(29).jpg" },
+                { nome: "images-(28)", url: "https://i.postimg.cc/R6Kpp5gP/images-(28).jpg" },
+                { nome: "espetacular-homem-aranha2", url: "https://i.postimg.cc/1fvSrwnN/espetacular-homem-aranha2-a4e4c8e6.jpg" },
+                { nome: "images-(27)", url: "https://i.postimg.cc/6ypJqqHD/images-(27).jpg" },
+                { nome: "Spide-Man-Poster", url: "https://i.postimg.cc/yJXv0XxL/Spide-Man-Poster.jpg" },
+                { nome: "images-(22)", url: "https://i.postimg.cc/V0SqZjsv/images-(22).jpg" },
+                { nome: "Sonic-the-Hedgehog", url: "https://i.postimg.cc/1fFq2RS6/Sonic-the-Hedgehog-2019.jpg" },
+                { nome: "Moana-poster", url: "https://i.postimg.cc/QV8Dvf3D/Moana-(2026)-poster.jpg" },
+                { nome: "IMG-20260713-WA0101", url: "https://i.postimg.cc/K491xLV4/IMG-20260713-WA0101.jpg" },
+                { nome: "IMG-20260713-WA0100", url: "https://i.postimg.cc/bsWd2PqP/IMG-20260713-WA0100.jpg" },
+                { nome: "IMG-20260713-WA0099", url: "https://i.postimg.cc/qtdRjGtS/IMG-20260713-WA0099.jpg" },
+                { nome: "IMG-20260713-WA0098", url: "https://i.postimg.cc/0MkNq20C/IMG-20260713-WA0098.jpg" },
+                { nome: "IMG-20260713-WA0097", url: "https://i.postimg.cc/p5yXpG7T/IMG-20260713-WA0097.jpg" },
+                { nome: "IMG-20260713-WA0096", url: "https://i.postimg.cc/8snzqGJc/IMG-20260713-WA0096.jpg" },
+                { nome: "IMG-20260713-WA0095", url: "https://i.postimg.cc/svkDgJ4t/IMG-20260713-WA0095.jpg" },
+                { nome: "IMG-20260713-WA0093", url: "https://i.postimg.cc/7CVxXrrf/IMG-20260713-WA0093.jpg" },
+                { nome: "IMG-20260713-WA0094", url: "https://i.postimg.cc/Jtt13F67/IMG-20260713-WA0094.jpg" },
+                { nome: "IMG-20260713-WA0086", url: "https://i.postimg.cc/9DHChQWM/IMG-20260713-WA0086.jpg" },
+                { nome: "IMG-20260713-WA0087", url: "https://i.postimg.cc/hJpBT8VP/IMG-20260713-WA0087.jpg" },
+                { nome: "IMG-20260713-WA0088", url: "https://i.postimg.cc/MMLJrWPM/IMG-20260713-WA0088.jpg" },
+                { nome: "IMG-20260713-WA0089", url: "https://i.postimg.cc/PPYn2nmN/IMG-20260713-WA0089.jpg" },
+                { nome: "IMG-20260713-WA0090", url: "https://i.postimg.cc/XXBRY61X/IMG-20260713-WA0090.jpg" },
+                { nome: "IMG-20260713-WA0091", url: "https://i.postimg.cc/WdTC8FNJ/IMG-20260713-WA0091.jpg" },
+                { nome: "IMG-20260713-WA0092", url: "https://i.postimg.cc/Yhws2GmX/IMG-20260713-WA0092.jpg" },
+                { nome: "72a800e9-752c-4b39-a061-262f5722c0c8", url: "https://i.postimg.cc/MMm8Jk9K/72a800e9-752c-4b39-a061-262f5722c0c8.jpg" },
+                { nome: "14ebd8c0-68f3-4576-b5e1-9c8193b4de42", url: "https://i.postimg.cc/RWJ5VJPv/14ebd8c0-68f3-4576-b5e1-9c8193b4de42.jpg" },
+                { nome: "d67a2588-197a-48c2-9afa-557ddde87cfa", url: "https://i.postimg.cc/DJgRYrz1/d67a2588-197a-48c2-9afa-557ddde87cfa.jpg" },
+                { nome: "8b147afa-96bd-4d30-9aac-45a8caa33efa", url: "https://i.postimg.cc/XGQDgn2K/8b147afa-96bd-4d30-9aac-45a8caa33efa.jpg" },
+                { nome: "66db3af2-7cb3-4857-9949-54bc6c174a45", url: "https://i.postimg.cc/4K18JJTx/66db3af2-7cb3-4857-9949-54bc6c174a45.jpg" },
+                { nome: "c0c06c94-1e48-43c8-b622-caf8ca07926b", url: "https://i.postimg.cc/NLndGJZQ/c0c06c94-1e48-43c8-b622-caf8ca07926b.jpg" },
+                { nome: "d2a36fc0-0929-4edc-93a4-bed06b1caebd", url: "https://i.postimg.cc/xkgPwtL4/d2a36fc0-0929-4edc-93a4-bed06b1caebd.jpg" },
+                { nome: "702a6b31-def7-4a91-a848-34f1009a479d", url: "https://i.postimg.cc/JGJ5r1bf/702a6b31-def7-4a91-a848-34f1009a479d.jpg" },
+                { nome: "7b4434da-d2ad-4e1a-9df7-67c44a6c865d", url: "https://i.postimg.cc/hzfVHgDH/7b4434da-d2ad-4e1a-9df7-67c44a6c865d.jpg" },
+                { nome: "4c9e6d3f-d212-4477-8d30-5795f4cbf4c8", url: "https://i.postimg.cc/CR7D5ddX/4c9e6d3f-d212-4477-8d30-5795f4cbf4c8.jpg" },
+                { nome: "8e395add-be6f-4787-9a3c-5d564af5f659", url: "https://i.postimg.cc/GTvTCmZ5/8e395add-be6f-4787-9a3c-5d564af5f659.jpg" },
+                { nome: "6f9437d4-e1b6-4276-8be9-b511fb7f0f1a", url: "https://i.postimg.cc/NLRKLLzj/6f9437d4-e1b6-4276-8be9-b511fb7f0f1a.jpg" },
+                { nome: "3a171af0-9f3e-490e-9d61-f8a15e05a8c5", url: "https://i.postimg.cc/k2gGjsXK/3a171af0-9f3e-490e-9d61-f8a15e05a8c5.jpg" },
+                { nome: "84534b1d-1a8d-425d-b784-875da29dc90b", url: "https://i.postimg.cc/1nw3gYJQ/84534b1d-1a8d-425d-b784-875da29dc90b.jpg" },
+                { nome: "54e8e4e8-7688-4aa8-9576-4279f7164d93", url: "https://i.postimg.cc/KRJvgTry/54e8e4e8-7688-4aa8-9576-4279f7164d93.jpg" },
+                { nome: "689d9cf4-72b1-49d7-9b79-e881a8c66a0f", url: "https://i.postimg.cc/NLv8jKxD/689d9cf4-72b1-49d7-9b79-e881a8c66a0f.jpg" },
+                { nome: "69f8acf7-5563-4c7e-aa84-205b5c2d542c", url: "https://i.postimg.cc/KkxYdhn5/69f8acf7-5563-4c7e-aa84-205b5c2d542c.jpg" },
+                { nome: "26b472bf-a98d-4c5d-90a6-7dc6e824de14", url: "https://i.postimg.cc/NLPgxHzh/26b472bf-a98d-4c5d-90a6-7dc6e824de14.jpg" },
+                { nome: "396e96ab-e8c6-448c-999e-01c1b2812837", url: "https://i.postimg.cc/fkkskbTV/396e96ab-e8c6-448c-999e-01c1b2812837.jpg" },
+                { nome: "6d24678e-e8cb-4af2-ab3c-65895b256525", url: "https://i.postimg.cc/TyRMxd4n/6d24678e-e8cb-4af2-ab3c-65895b256525.jpg" },
+                { nome: "a217e26c-3ff3-4495-b555-358c70b28e7e", url: "https://i.postimg.cc/0zshG5x4/a217e26c-3ff3-4495-b555-358c70b28e7e.jpg" },
+                { nome: "c7d3d311-22f4-43bd-82a2-0569b8b2421b", url: "https://i.postimg.cc/wyZG1g0n/c7d3d311-22f4-43bd-82a2-0569b8b2421b.jpg" },
+                { nome: "b589d022-e56a-4c28-8ebc-5cf23eee30e1", url: "https://i.postimg.cc/3k1fggt2/b589d022-e56a-4c28-8ebc-5cf23eee30e1.jpg" },
+                { nome: "4d328a0a-7e34-474b-8037-df29342a0837", url: "https://i.postimg.cc/LnMxwy78/4d328a0a-7e34-474b-8037-df29342a0837.jpg" },
+                { nome: "c3c1d128-7170-4593-8ece-2512682c21e5", url: "https://i.postimg.cc/v1jzzXf4/c3c1d128-7170-4593-8ece-2512682c21e5.jpg" },
+                { nome: "25bfefd2-50ee-4455-8373-c4b799ab19af", url: "https://i.postimg.cc/pmLJM3BJ/25bfefd2-50ee-4455-8373-c4b799ab19af.jpg" },
+                { nome: "8ce42365-e0d2-48a5-85ed-b72cb506e5ee", url: "https://i.postimg.cc/PvMYBMpz/8ce42365-e0d2-48a5-85ed-b72cb506e5ee.jpg" },
+                { nome: "f55b350c-de14-4272-89c7-9c1d0e65a858", url: "https://i.postimg.cc/QB5bf1bJ/f55b350c-de14-4272-89c7-9c1d0e65a858.jpg" },
+                { nome: "5a61b723-61b8-4de9-bed2-746fbc01f91a", url: "https://i.postimg.cc/zb7TQjRy/5a61b723-61b8-4de9-bed2-746fbc01f91a.jpg" },
+                { nome: "f0c16d0a-ca37-4e5e-8699-22be135a5d73", url: "https://i.postimg.cc/nXmBxZDC/f0c16d0a-ca37-4e5e-8699-22be135a5d73.jpg" },
+                { nome: "0522186f-ca06-44a1-94a5-10ca7a08bde9", url: "https://i.postimg.cc/JtdkBt38/0522186f-ca06-44a1-94a5-10ca7a08bde9.jpg" },
+                { nome: "a3b607c9-1888-48e9-8bd3-924bb9923616", url: "https://i.postimg.cc/r0wDDLK8/a3b607c9-1888-48e9-8bd3-924bb9923616.jpg" },
+                { nome: "768b6316-2433-4206-9925-1dac648d4798", url: "https://i.postimg.cc/JttymMwz/768b6316-2433-4206-9925-1dac648d4798.jpg" },
+                { nome: "480f4dad-dd33-4274-97f2-2244cfe41a43", url: "https://i.postimg.cc/jD62vjf5/480f4dad-dd33-4274-97f2-2244cfe41a43.jpg" },
+                { nome: "e1bde8ca-7058-437f-ac8a-32af7a6d945f", url: "https://i.postimg.cc/MMLpXfkS/e1bde8ca-7058-437f-ac8a-32af7a6d945f.jpg" },
+                { nome: "95a836ba-7738-42f2-b594-e83343fc4a7a", url: "https://i.postimg.cc/HJZpP8kM/95a836ba-7738-42f2-b594-e83343fc4a7a.jpg" },
+                { nome: "3b912079-cd10-4394-bc47-799af0700e5e", url: "https://i.postimg.cc/6yrBxmpY/3b912079-cd10-4394-bc47-799af0700e5e.jpg" },
+                { nome: "32645932-6f3c-43a6-bc7f-ab9fa7e2a61e", url: "https://i.postimg.cc/cgnVMvKV/32645932-6f3c-43a6-bc7f-ab9fa7e2a61e.jpg" },
+                { nome: "427fd449-128e-4e60-9789-3a20d97bc89a", url: "https://i.postimg.cc/bsT4TcJZ/427fd449-128e-4e60-9789-3a20d97bc89a.jpg" },
+                { nome: "ce5e4d64-196e-48be-95a5-9513e5f186bd", url: "https://i.postimg.cc/dkrxZgpJ/ce5e4d64-196e-48be-95a5-9513e5f186bd.jpg" },
+                { nome: "39d1c5ab-871a-4917-9507-93894d5e7d41", url: "https://i.postimg.cc/cv6Zt4cj/39d1c5ab-871a-4917-9507-93894d5e7d41.jpg" },
+                { nome: "4bb4067c-5b8b-415b-ae58-d1286bee588c", url: "https://i.postimg.cc/XX3bcg8k/4bb4067c-5b8b-415b-ae58-d1286bee588c.jpg" },
+                { nome: "d35d3f40-8a1d-413f-b0b7-72416ee1b96e", url: "https://i.postimg.cc/ftN6Cwxv/d35d3f40-8a1d-413f-b0b7-72416ee1b96e.jpg" },
+                { nome: "d3bed377-7351-4462-8116-a3395c3fb97a", url: "https://i.postimg.cc/Vd62DZbr/d3bed377-7351-4462-8116-a3395c3fb97a.jpg" },
+                { nome: "61c9f137-956a-44b4-94ca-e55bd2ff2978", url: "https://i.postimg.cc/k2S1p0Mj/61c9f137-956a-44b4-94ca-e55bd2ff2978.jpg" },
+                { nome: "5b11fb86-fc33-45c4-9d1a-73086af04841", url: "https://i.postimg.cc/w7mQqhKv/5b11fb86-fc33-45c4-9d1a-73086af04841.jpg" },
+                { nome: "8a72e7b6-118e-470f-9dcc-ecab440ca502", url: "https://i.postimg.cc/0bD7RPmN/8a72e7b6-118e-470f-9dcc-ecab440ca502.jpg" },
+                { nome: "b6f451e3-3b5d-46b7-9f43-0dcf1504ab1c", url: "https://i.postimg.cc/WFxqCH1w/b6f451e3-3b5d-46b7-9f43-0dcf1504ab1c.jpg" },
+                { nome: "15e317fa-11d4-4490-bf0d-cfb6b0f4d6e6", url: "https://i.postimg.cc/RWG64F0x/15e317fa-11d4-4490-bf0d-cfb6b0f4d6e6.jpg" },
+                { nome: "087cbec9-a071-43fe-b4e6-4d28d2e78fb5", url: "https://i.postimg.cc/QHJVJt18/087cbec9-a071-43fe-b4e6-4d28d2e78fb5.jpg" },
+                { nome: "06e63870-531e-4770-89be-fb159c13835d", url: "https://i.postimg.cc/JHW4bVnw/06e63870-531e-4770-89be-fb159c13835d.jpg" },
+                { nome: "dfafb957-b407-4b61-8a0d-11611456c8e5", url: "https://i.postimg.cc/215jdxC2/dfafb957-b407-4b61-8a0d-11611456c8e5.jpg" },
+                { nome: "d300d8c0-bc8d-4c09-a37f-c661d461ddc4", url: "https://i.postimg.cc/640wn8gt/d300d8c0-bc8d-4c09-a37f-c661d461ddc4.jpg" },
+                { nome: "69b36251-6577-4a2d-bfdf-e01b1343c277", url: "https://i.postimg.cc/gXyrtkQH/69b36251-6577-4a2d-bfdf-e01b1343c277.jpg" },
+                { nome: "90c6fb61-6264-4f23-bce0-3ac3622a8fc5", url: "https://i.postimg.cc/xXk8DPBv/90c6fb61-6264-4f23-bce0-3ac3622a8fc5.jpg" },
+                { nome: "141a9b4e-6cbd-49ea-831a-aceed2d32903", url: "https://i.postimg.cc/14J38TQN/141a9b4e-6cbd-49ea-831a-aceed2d32903.jpg" },
+                { nome: "4a047319-f5a1-4b40-8f6a-14b31b05e7e8", url: "https://i.postimg.cc/CzRSzxJg/4a047319-f5a1-4b40-8f6a-14b31b05e7e8.jpg" },
+                { nome: "e178aeb3-afdf-4412-b547-56c0d912f509", url: "https://i.postimg.cc/zLj9xsp6/e178aeb3-afdf-4412-b547-56c0d912f509.jpg" },
+                { nome: "97edbc16-5b2e-447c-9b86-d5b58188603a", url: "https://i.postimg.cc/mc85YQgs/97edbc16-5b2e-447c-9b86-d5b58188603a.jpg" },
+                { nome: "cc459031-8014-4047-9fde-1022855f5699", url: "https://i.postimg.cc/0Mzc7F45/cc459031-8014-4047-9fde-1022855f5699.jpg" },
+                { nome: "8461eab1-fa6b-4775-a6cb-791b9792aacb", url: "https://i.postimg.cc/jD8HvvPC/8461eab1-fa6b-4775-a6cb-791b9792aacb.jpg" },
+                { nome: "89e9eded-e42c-4295-be77-4c47f0d901ff", url: "https://i.postimg.cc/hfcVBN09/89e9eded-e42c-4295-be77-4c47f0d901ff.jpg" },
+                { nome: "9d16eb43-0f84-47d5-a531-94f7d2520a63", url: "https://i.postimg.cc/ZvZvJy6q/9d16eb43-0f84-47d5-a531-94f7d2520a63.jpg" },
+                { nome: "7742f376-ea8f-4ce2-98d4-af4796d55788", url: "https://i.postimg.cc/1n1rNXD0/7742f376-ea8f-4ce2-98d4-af4796d55788.jpg" },
+                { nome: "27b67d30-b1e1-4438-b2be-2e3e5d794bcd", url: "https://i.postimg.cc/SnX6TCrw/27b67d30-b1e1-4438-b2be-2e3e5d794bcd.jpg" },
+                { nome: "21cf647f-ef26-455f-8dfb-96f90d82e2fc", url: "https://i.postimg.cc/zbNTGMr8/21cf647f-ef26-455f-8dfb-96f90d82e2fc.jpg" },
+                { nome: "259c7906-c571-4591-9fcd-d9da3d451c03", url: "https://i.postimg.cc/N5nTHLcN/259c7906-c571-4591-9fcd-d9da3d451c03.jpg" },
+                { nome: "619e13a7-aaa8-43dd-96c1-d62c7db1ac6b", url: "https://i.postimg.cc/CdLfrbM7/619e13a7-aaa8-43dd-96c1-d62c7db1ac6b.jpg" },
+                { nome: "9bbb9be1-153a-4d8c-bddd-6a2539993933", url: "https://i.postimg.cc/9RXzSj2W/9bbb9be1-153a-4d8c-bddd-6a2539993933.jpg" },
+                { nome: "a9f18043-9afe-48bc-970b-7afd07287d1c", url: "https://i.postimg.cc/18pt3z5t/a9f18043-9afe-48bc-970b-7afd07287d1c.jpg" },
+                { nome: "d70f5bd3-4388-44e6-9e25-a62f6c867e05", url: "https://i.postimg.cc/MMGK5b00/d70f5bd3-4388-44e6-9e25-a62f6c867e05.jpg" },
+                { nome: "641dcc23-960e-434e-8e34-c5f159563d72", url: "https://i.postimg.cc/HcjdXWH5/641dcc23-960e-434e-8e34-c5f159563d72.jpg" },
+                { nome: "fe6d2e2f-7a4b-47f1-8254-99f94831bfa6", url: "https://i.postimg.cc/fJYZxr4p/fe6d2e2f-7a4b-47f1-8254-99f94831bfa6.jpg" },
+                { nome: "84a78b06-335d-46ed-b68a-f90eeba6fdec", url: "https://i.postimg.cc/xkpSfrHD/84a78b06-335d-46ed-b68a-f90eeba6fdec.jpg" },
+                { nome: "503d1417-e5aa-4262-83b2-0a7769a4576f", url: "https://i.postimg.cc/30mMFdq4/503d1417-e5aa-4262-83b2-0a7769a4576f.jpg" },
+                { nome: "9e0e3229-7763-470a-98bb-2f4998f9ae41", url: "https://i.postimg.cc/Hr3qzGSD/9e0e3229-7763-470a-98bb-2f4998f9ae41.jpg" },
+                { nome: "91f80aab-52f3-4611-9bc1-6512146da591", url: "https://i.postimg.cc/9w3K0cQv/91f80aab-52f3-4611-9bc1-6512146da591.jpg" },
+                { nome: "46376ee7-e733-4222-ac42-95f2aaf713b9", url: "https://i.postimg.cc/3kLqpXwz/46376ee7-e733-4222-ac42-95f2aaf713b9.jpg" },
+                { nome: "913874e5-e18a-4f08-b58f-484885c98f80", url: "https://i.postimg.cc/V5jH4Q6k/913874e5-e18a-4f08-b58f-484885c98f80.jpg" },
+                { nome: "c868ff08-221f-4595-a72a-b00235933d2a", url: "https://i.postimg.cc/18YW4yC9/c868ff08-221f-4595-a72a-b00235933d2a.jpg" },
+                { nome: "92ecd9a0-bfc1-462f-afb3-c183a0ce5abd", url: "https://i.postimg.cc/T590xxLn/92ecd9a0-bfc1-462f-afb3-c183a0ce5abd.jpg" },
+                { nome: "b5a024da-be76-4f3f-b538-5a0e14c32db0", url: "https://i.postimg.cc/ppVbFXZ5/b5a024da-be76-4f3f-b538-5a0e14c32db0.jpg" },
+                { nome: "210c4ecc-7a73-4a99-8168-b04dd61bcfe5", url: "https://i.postimg.cc/nj1SFBNY/210c4ecc-7a73-4a99-8168-b04dd61bcfe5.jpg" },
+                { nome: "aee4f2a5-36d9-4667-af54-e2044b52fcdc", url: "https://i.postimg.cc/f3cBCYzF/aee4f2a5-36d9-4667-af54-e2044b52fcdc.jpg" },
+                { nome: "98bca38c-7020-4a8d-8b15-7b8d4f930c09", url: "https://i.postimg.cc/ykDj5M6t/98bca38c-7020-4a8d-8b15-7b8d4f930c09.jpg" },
+                { nome: "f1f12701-eb62-41ab-a597-7f973b126482", url: "https://i.postimg.cc/1nW07Hks/f1f12701-eb62-41ab-a597-7f973b126482.jpg" },
+                { nome: "dc741d00-ce1d-45cb-bf02-e5a46d558923", url: "https://i.postimg.cc/FYty61B0/dc741d00-ce1d-45cb-bf02-e5a46d558923.jpg" },
+                { nome: "2988ea8a-889a-414e-beb2-3dd1decdc77b", url: "https://i.postimg.cc/642ZjNVZ/2988ea8a-889a-414e-beb2-3dd1decdc77b.jpg" },
+                { nome: "69be5814-54a3-4947-9db7-6042c406b1d2", url: "https://i.postimg.cc/XBCZKk35/69be5814-54a3-4947-9db7-6042c406b1d2.jpg" },
+                { nome: "b9cd274b-756c-44ec-a8dc-996e87bb0dc5", url: "https://i.postimg.cc/hzHvGQxg/b9cd274b-756c-44ec-a8dc-996e87bb0dc5.jpg" },
+                { nome: "f13da88b-8135-4fe7-b74d-1b6c6c27c23d", url: "https://i.postimg.cc/2VN3RvCD/f13da88b-8135-4fe7-b74d-1b6c6c27c23d.jpg" },
+                { nome: "d340b578-705c-464a-b189-731f7eb776a6", url: "https://i.postimg.cc/ZByYXYgk/d340b578-705c-464a-b189-731f7eb776a6.jpg" },
+                { nome: "b1ad3049-a896-499c-97a2-8a999cbc2beb", url: "https://i.postimg.cc/PNYr4xY1/b1ad3049-a896-499c-97a2-8a999cbc2beb.jpg" },
+                { nome: "94835500-dec4-4cc0-99ab-e46f284c1d01", url: "https://i.postimg.cc/N5PXhFCL/94835500-dec4-4cc0-99ab-e46f284c1d01.jpg" },
+                { nome: "e07f548d-495f-4984-b840-542231e7d087", url: "https://i.postimg.cc/Wd2Hy9K3/e07f548d-495f-4984-b840-542231e7d087.jpg" },
+                { nome: "b2e3f0ba-32a1-47b7-b53d-8a562617e7ff", url: "https://i.postimg.cc/wysfNnyK/b2e3f0ba-32a1-47b7-b53d-8a562617e7ff.jpg" },
+                { nome: "20f6bfc4-4c2d-4a35-83cb-511fa5655b91", url: "https://i.postimg.cc/XpWHZHnt/20f6bfc4-4c2d-4a35-83cb-511fa5655b91.jpg" },
+                { nome: "b1c7ba1f-ab28-48a7-995d-5b528cc13e92", url: "https://i.postimg.cc/ph8Cr84R/b1c7ba1f-ab28-48a7-995d-5b528cc13e92.jpg" },
+                { nome: "163378e4-49f2-497c-b303-fe865c213572", url: "https://i.postimg.cc/F7GZYhWL/163378e4-49f2-497c-b303-fe865c213572.jpg" },
+                { nome: "d5fe84df-0168-4860-b7d6-e09f6cd9e339", url: "https://i.postimg.cc/V0gj0FFp/d5fe84df-0168-4860-b7d6-e09f6cd9e339.jpg" },
+                { nome: "3bf98adf-af18-4e3c-92e8-2c69ce36dad8", url: "https://i.postimg.cc/7CztGpJp/3bf98adf-af18-4e3c-92e8-2c69ce36dad8.jpg" },
+                { nome: "4da085d5-37cd-476f-a080-6c769cec9843", url: "https://i.postimg.cc/grsSZyrz/4da085d5-37cd-476f-a080-6c769cec9843.jpg" },
+                { nome: "f785d302-8479-483f-ba50-1b573f5f9957", url: "https://i.postimg.cc/2LSxwJyc/f785d302-8479-483f-ba50-1b573f5f9957.jpg" },
+                { nome: "c1e0b23a-894e-4b1b-a532-981964b47fa3", url: "https://i.postimg.cc/FdDy7ZpC/c1e0b23a-894e-4b1b-a532-981964b47fa3.jpg" },
+                { nome: "97b4a5d2-4967-490a-b352-01eb2adf0f32", url: "https://i.postimg.cc/KK5LHN61/97b4a5d2-4967-490a-b352-01eb2adf0f32.jpg" },
+                { nome: "40d92692-b740-4bb6-975e-39b8201fbb0b", url: "https://i.postimg.cc/PCswf9hP/40d92692-b740-4bb6-975e-39b8201fbb0b.jpg" },
+                { nome: "5e79ac46-5334-4406-ae27-3ba0575a6f2b", url: "https://i.postimg.cc/HchrqP36/5e79ac46-5334-4406-ae27-3ba0575a6f2b.jpg" },
+                { nome: "3ed22bc2-0bac-4fb9-851a-ff4c8f18f951", url: "https://i.postimg.cc/MvRnL5Br/3ed22bc2-0bac-4fb9-851a-ff4c8f18f951.jpg" },
+                { nome: "89708716-fe5e-45b8-a083-f814a95a66de", url: "https://i.postimg.cc/7GdLsJZT/89708716-fe5e-45b8-a083-f814a95a66de.jpg" },
+                { nome: "2069e910-aaf3-4d6d-87c0-ebb1b47a088f", url: "https://i.postimg.cc/DSnwMTny/2069e910-aaf3-4d6d-87c0-ebb1b47a088f.jpg" },
+                { nome: "e1476235-ac42-4d9a-9be8-f75f3fee6b3b", url: "https://i.postimg.cc/Jyd70HJp/e1476235-ac42-4d9a-9be8-f75f3fee6b3b.jpg" },
+                { nome: "f69c7fa4-c90c-4ee7-848c-a1598aeefbf7", url: "https://i.postimg.cc/Jytmf7gL/f69c7fa4-c90c-4ee7-848c-a1598aeefbf7.jpg" },
+                { nome: "82475a8b-74a9-463c-8af1-2255034ec78b", url: "https://i.postimg.cc/z3T5ZcdK/82475a8b-74a9-463c-8af1-2255034ec78b.jpg" },
+                { nome: "901adcea-f878-4c05-9950-79a12d07ebb6", url: "https://i.postimg.cc/pmmR7X35/901adcea-f878-4c05-9950-79a12d07ebb6.jpg" },
+                { nome: "9bb41ab4-39a9-434c-9056-191ff2c4c0f7", url: "https://i.postimg.cc/yW3hVF9y/9bb41ab4-39a9-434c-9056-191ff2c4c0f7.jpg" },
+                { nome: "12157fed-c3c3-47ac-b06c-af5936b382a0", url: "https://i.postimg.cc/tnFVFNNQ/12157fed-c3c3-47ac-b06c-af5936b382a0.jpg" },
+                { nome: "edb271c3-8a39-4c8b-8500-337f36c2296f", url: "https://i.postimg.cc/QFfKgt1V/edb271c3-8a39-4c8b-8500-337f36c2296f.jpg" },
+                { nome: "7618e4c0-2036-41e6-aeed-e6da86ca0bb0", url: "https://i.postimg.cc/bGKJL2Jq/7618e4c0-2036-41e6-aeed-e6da86ca0bb0.jpg" },
+                { nome: "771152d2-5642-4935-96ab-45c7f62a4eb0", url: "https://i.postimg.cc/1nG9HC20/771152d2-5642-4935-96ab-45c7f62a4eb0.jpg" },
+                { nome: "ff5fe698-b1c1-4871-8048-73635c432cbb", url: "https://i.postimg.cc/Jsx2C9H3/ff5fe698-b1c1-4871-8048-73635c432cbb.jpg" },
+                { nome: "37288acb-b243-42c7-9fea-6391a8dfad21", url: "https://i.postimg.cc/YLQdnVHB/37288acb-b243-42c7-9fea-6391a8dfad21.jpg" },
+                { nome: "3e92d91b-b670-4cbf-b6e0-b4d55d440e17", url: "https://i.postimg.cc/fV8Brm1B/3e92d91b-b670-4cbf-b6e0-b4d55d440e17.jpg" },
+                { nome: "cd16ba36-8ef0-4162-9405-13156f630675", url: "https://i.postimg.cc/cK6Xy6Sc/cd16ba36-8ef0-4162-9405-13156f630675.jpg" },
+                { nome: "5d92fc25-fb44-4276-a03e-f6a881ab38b0", url: "https://i.postimg.cc/zHYjgjRb/5d92fc25-fb44-4276-a03e-f6a881ab38b0.jpg" },
+                { nome: "06997521-e33a-4fa6-b25a-1178a60cfc0f", url: "https://i.postimg.cc/cgw70n50/06997521-e33a-4fa6-b25a-1178a60cfc0f.jpg" },
+                { nome: "767ec729-0deb-43d0-a838-f7bf2288be6b", url: "https://i.postimg.cc/4nvM17Nn/767ec729-0deb-43d0-a838-f7bf2288be6b.jpg" },
+                { nome: "ff306111-70ba-4ddb-871f-57d03637ede0", url: "https://i.postimg.cc/f30qSkgP/ff306111-70ba-4ddb-871f-57d03637ede0.jpg" },
+                { nome: "2ed95919-94d2-4240-a991-b1fa47e46dcc", url: "https://i.postimg.cc/F1vC1rb2/2ed95919-94d2-4240-a991-b1fa47e46dcc.jpg" },
+                { nome: "697e23a7-28d2-4c1f-841a-c369ca81b693", url: "https://i.postimg.cc/5XDnJbN5/697e23a7-28d2-4c1f-841a-c369ca81b693.jpg" },
+                { nome: "5a712e54-7cf3-4dc9-b3df-6c1e344ae991", url: "https://i.postimg.cc/646hcQYC/5a712e54-7cf3-4dc9-b3df-6c1e344ae991.jpg" },
+                { nome: "f204b258-120a-46dd-b051-f33dac20195f", url: "https://i.postimg.cc/LnbVk2f9/f204b258-120a-46dd-b051-f33dac20195f.jpg" },
+                { nome: "4ef6345c-d7b8-4603-b20a-a786c9061401", url: "https://i.postimg.cc/JDxNsLMz/4ef6345c-d7b8-4603-b20a-a786c9061401.jpg" },
+                { nome: "5084ee77-f1a9-46ab-b176-bc7e46aafbfa", url: "https://i.postimg.cc/mhd3RBmp/5084ee77-f1a9-46ab-b176-bc7e46aafbfa.jpg" },
+                { nome: "26e45136-3eff-4387-bbfc-edd774ce8b2b", url: "https://i.postimg.cc/fSk9kS80/26e45136-3eff-4387-bbfc-edd774ce8b2b.jpg" },
+                { nome: "678a6de2-f860-42ed-985a-b6a028b785f0", url: "https://i.postimg.cc/xNkX9Dds/678a6de2-f860-42ed-985a-b6a028b785f0.jpg" },
+                { nome: "0716f0f4-6c0b-4313-9b3d-556d205443ba", url: "https://i.postimg.cc/rzvm5Hmj/0716f0f4-6c0b-4313-9b3d-556d205443ba.jpg" },
+                { nome: "ede0e05d-4228-43a3-be34-31322c325164", url: "https://i.postimg.cc/sQbV9BVg/ede0e05d-4228-43a3-be34-31322c325164.jpg" },
+                { nome: "4f3c2a62-a806-49c3-b161-d1241321b7ae", url: "https://i.postimg.cc/vx7pgDDT/4f3c2a62-a806-49c3-b161-d1241321b7ae.jpg" },
+                { nome: "b09b34fe-e4d5-453e-991c-c4387193f0f8", url: "https://i.postimg.cc/ykPM7Jw5/b09b34fe-e4d5-453e-991c-c4387193f0f8.jpg" },
+                { nome: "9353da01-d60e-470e-891b-97cb89219fe1", url: "https://i.postimg.cc/47V0qn6z/9353da01-d60e-470e-891b-97cb89219fe1.jpg" },
+                { nome: "35ec2e8e-3c5c-492e-a5ea-3054e2383aae", url: "https://i.postimg.cc/ThX2wD4X/35ec2e8e-3c5c-492e-a5ea-3054e2383aae.jpg" },
+                { nome: "d8c2f80a-fdc0-446a-98e3-727f33b46c2d", url: "https://i.postimg.cc/ZW04gFCd/d8c2f80a-fdc0-446a-98e3-727f33b46c2d.jpg" },
+                { nome: "de1e4e75-68c6-4bdd-8688-1a83cb1afe13", url: "https://i.postimg.cc/4YKRwfS0/de1e4e75-68c6-4bdd-8688-1a83cb1afe13.jpg" },
+                { nome: "6f064960-92c2-4e6e-bd9d-eaf929c9b277", url: "https://i.postimg.cc/hfjkP4cD/6f064960-92c2-4e6e-bd9d-eaf929c9b277.jpg" },
+                { nome: "8a378521-264a-40bd-87fb-441aa839c079", url: "https://i.postimg.cc/64Qm3zsb/8a378521-264a-40bd-87fb-441aa839c079.jpg" },
+                { nome: "e6baed65-1602-4639-b4a7-1640d1259385", url: "https://i.postimg.cc/2VMKk40T/e6baed65-1602-4639-b4a7-1640d1259385.jpg" },
+                { nome: "6c329707-c49e-4487-8b65-ca5b1e5f6e7f", url: "https://i.postimg.cc/fkxLjK9c/6c329707-c49e-4487-8b65-ca5b1e5f6e7f.jpg" },
+                { nome: "5b302b8c-63fa-4dd0-8ed6-81979779f319", url: "https://i.postimg.cc/2bnzGk3T/5b302b8c-63fa-4dd0-8ed6-81979779f319.jpg" },
+                { nome: "9be9224a-0d01-4bf9-b998-2d2c737bbb74", url: "https://i.postimg.cc/rzJd2jwX/9be9224a-0d01-4bf9-b998-2d2c737bbb74.jpg" },
+                { nome: "1ab67012-7100-4355-9f63-529cb06be646", url: "https://i.postimg.cc/HJwY4WrF/1ab67012-7100-4355-9f63-529cb06be646.jpg" },
+                { nome: "4d4de6ba-b251-4930-af9f-66e3eb7894c2", url: "https://i.postimg.cc/nCXnSGsD/4d4de6ba-b251-4930-af9f-66e3eb7894c2.jpg" },
+                { nome: "8456dae0-f27d-4016-8f16-5b8c500afeaf", url: "https://i.postimg.cc/rRK2bqpy/8456dae0-f27d-4016-8f16-5b8c500afeaf.jpg" },
+                { nome: "31512c77-4b9a-4a61-98b7-b8af395f8f96", url: "https://i.postimg.cc/t1k04sZs/31512c77-4b9a-4a61-98b7-b8af395f8f96.jpg" },
+                { nome: "aed2800f-5115-429c-98e6-b66471f072fe", url: "https://i.postimg.cc/dDXb3P1m/aed2800f-5115-429c-98e6-b66471f072fe.jpg" },
+                { nome: "f3410349-210c-407f-b30e-e578235231b3", url: "https://i.postimg.cc/Ff9q8hW5/f3410349-210c-407f-b30e-e578235231b3.jpg" },
+                { nome: "37e864e6-8a3f-4387-b4f1-9c758a9f3ee7", url: "https://i.postimg.cc/qg9F0sbZ/37e864e6-8a3f-4387-b4f1-9c758a9f3ee7.jpg" },
+                { nome: "d681fb76-d754-473c-a674-6dad439add25", url: "https://i.postimg.cc/sQbTjzcC/d681fb76-d754-473c-a674-6dad439add25.jpg" },
+                { nome: "57b0011d-96ce-4613-8fd0-6a420d653e98", url: "https://i.postimg.cc/LqXDj5Qn/57b0011d-96ce-4613-8fd0-6a420d653e98.jpg" },
+                { nome: "584570b1-7434-49a2-a774-49ae122586c5", url: "https://i.postimg.cc/1fQKJJ7p/584570b1-7434-49a2-a774-49ae122586c5.jpg" },
+                { nome: "b00f0e67-c731-499b-a312-0335c4e09abb", url: "https://i.postimg.cc/QBHgHPV9/b00f0e67-c731-499b-a312-0335c4e09abb.jpg" },
+                { nome: "89ef184d-7ac5-4f54-8dc4-58ff618682d1", url: "https://i.postimg.cc/F7p0GmL3/89ef184d-7ac5-4f54-8dc4-58ff618682d1.jpg" },
+                { nome: "ec34aa1b-878e-487d-a451-cf6573607dd4", url: "https://i.postimg.cc/YGQWFw79/ec34aa1b-878e-487d-a451-cf6573607dd4.jpg" },
+                { nome: "3259f0ff-d134-4d4f-b288-35dfcaf3b22b", url: "https://i.postimg.cc/SJLbv1S7/3259f0ff-d134-4d4f-b288-35dfcaf3b22b.jpg" },
+                { nome: "c324b169-785f-4fac-a450-234e6da82b0e", url: "https://i.postimg.cc/hzQHbpyk/c324b169-785f-4fac-a450-234e6da82b0e.jpg" },
+                { nome: "9f5a709e-a4d5-4b79-a234-0efc2f77ebfe", url: "https://i.postimg.cc/z3Wsy2g1/9f5a709e-a4d5-4b79-a234-0efc2f77ebfe.jpg" },
+                { nome: "2120784c-3067-4b7a-9d85-b8b0e2afad41", url: "https://i.postimg.cc/XZmPJ9NM/2120784c-3067-4b7a-9d85-b8b0e2afad41.jpg" },
+                { nome: "ada75a07-a771-4642-999f-8217300d47aa", url: "https://i.postimg.cc/n9YS05vP/ada75a07-a771-4642-999f-8217300d47aa.jpg" },
+                { nome: "ed2a5f53-a65e-4df0-aebd-72a6db842f87", url: "https://i.postimg.cc/McMshX7R/ed2a5f53-a65e-4df0-aebd-72a6db842f87.jpg" },
+                { nome: "2b16ff61-5e6a-4cf0-8ac4-8fcc2855c821", url: "https://i.postimg.cc/DJ1xwDYg/2b16ff61-5e6a-4cf0-8ac4-8fcc2855c821.jpg" },
+                { nome: "ff3f8002-f7aa-4dac-bff9-3330ec3d7683", url: "https://i.postimg.cc/ThJXkHYK/ff3f8002-f7aa-4dac-bff9-3330ec3d7683.jpg" },
+                { nome: "768907f0-88d1-471c-899f-885e3d2839b3", url: "https://i.postimg.cc/34QP12sn/768907f0-88d1-471c-899f-885e3d2839b3.jpg" },
+                { nome: "c6238c80-958c-4475-947a-accf6cbc5e32", url: "https://i.postimg.cc/Hj2f0cB4/c6238c80-958c-4475-947a-accf6cbc5e32.jpg" },
+                { nome: "7db57da9-6d0d-40c4-b353-77aa88331827", url: "https://i.postimg.cc/N9tzmBXd/7db57da9-6d0d-40c4-b353-77aa88331827.jpg" },
+                { nome: "093ba149-a36d-429a-9b70-216c0cd85c59", url: "https://i.postimg.cc/CdF2KMSk/093ba149-a36d-429a-9b70-216c0cd85c59.jpg" },
+                { nome: "caaf627f-1668-43c8-9efd-45cc9544f17c", url: "https://i.postimg.cc/5Hd7Wbsc/caaf627f-1668-43c8-9efd-45cc9544f17c.jpg" },
+                { nome: "17699fd9-0c21-4514-8adb-46fd83616489", url: "https://i.postimg.cc/7bsKYgKX/17699fd9-0c21-4514-8adb-46fd83616489.jpg" },
+                { nome: "afeb1f50-c1ac-4195-b81a-310f98220cb4", url: "https://i.postimg.cc/34LFNTFw/afeb1f50-c1ac-4195-b81a-310f98220cb4.jpg" },
+                { nome: "e6222c9a-7e97-472a-bcd2-874410cf50fb", url: "https://i.postimg.cc/PNRMkdxG/e6222c9a-7e97-472a-bcd2-874410cf50fb.jpg" },
+                { nome: "585fb144-c3a2-4c6e-9dfb-d4a243a7608f", url: "https://i.postimg.cc/PLTWMx6M/585fb144-c3a2-4c6e-9dfb-d4a243a7608f.jpg" },
+                { nome: "85e8c172-cdf8-4ef7-bb4c-f09823ddcfd8", url: "https://i.postimg.cc/nXY7MxHQ/85e8c172-cdf8-4ef7-bb4c-f09823ddcfd8.jpg" },
+                { nome: "69651f89-d48b-47f4-9adf-36fc149339d4", url: "https://i.postimg.cc/tsyZKchj/69651f89-d48b-47f4-9adf-36fc149339d4.jpg" },
+                { nome: "fa6a000e-e9e0-49e5-a145-4c11acac3c52", url: "https://i.postimg.cc/1gXtP1XC/fa6a000e-e9e0-49e5-a145-4c11acac3c52.jpg" },
+                { nome: "0713c0cf-a4ef-4e4a-a473-090eea368d09", url: "https://i.postimg.cc/CZS2fwkf/0713c0cf-a4ef-4e4a-a473-090eea368d09.jpg" },
+                { nome: "9cde1f05-c205-4a34-807f-fbfab0ad1014", url: "https://i.postimg.cc/xJqtK8Cz/9cde1f05-c205-4a34-807f-fbfab0ad1014.jpg" },
+                { nome: "416c31ac-baf2-4dbc-a6ab-1221460bb8e2", url: "https://i.postimg.cc/vDVvMp6r/416c31ac-baf2-4dbc-a6ab-1221460bb8e2.jpg" },
+                { nome: "c072abc2-b369-47b5-ab80-e14bd88e61b5", url: "https://i.postimg.cc/gwjv75Wm/c072abc2-b369-47b5-ab80-e14bd88e61b5.jpg" },
+                { nome: "b6b00852-c02c-4777-828b-6ff0e8f562eb", url: "https://i.postimg.cc/KkJ7s2KK/b6b00852-c02c-4777-828b-6ff0e8f562eb.jpg" },
+                { nome: "0c5b945d-57da-492b-8e6a-d3bbb727d5f7", url: "https://i.postimg.cc/w7SXrFBq/0c5b945d-57da-492b-8e6a-d3bbb727d5f7.jpg" },
+                { nome: "f7129073-7028-41c0-8a9a-d0a15a0c3d70", url: "https://i.postimg.cc/xkQKfCMJ/f7129073-7028-41c0-8a9a-d0a15a0c3d70.jpg" },
+                { nome: "4662823c-315f-402d-b201-bdd79b8a4205", url: "https://i.postimg.cc/mhk72Kzt/4662823c-315f-402d-b201-bdd79b8a4205.jpg" },
+                { nome: "f7c150d0-4040-4fd4-9486-5aff5dc123f2", url: "https://i.postimg.cc/bGqtX5fY/f7c150d0-4040-4fd4-9486-5aff5dc123f2.jpg" },
+                { nome: "074d157f-4cd7-4b85-b103-fe593d4bdab6", url: "https://i.postimg.cc/sGGB9d7K/074d157f-4cd7-4b85-b103-fe593d4bdab6.jpg" },
+                { nome: "e8bab30f-3628-491b-8e4c-05f83c5e6269", url: "https://i.postimg.cc/fJXtVswL/e8bab30f-3628-491b-8e4c-05f83c5e6269.jpg" },
+                { nome: "7c12c42e-a485-4876-a507-1052e0e04a84", url: "https://i.postimg.cc/wyZMBfZc/7c12c42e-a485-4876-a507-1052e0e04a84.jpg" },
+                { nome: "ba37656d-a588-49cd-8806-71f923619690", url: "https://i.postimg.cc/0bpj8CfQ/ba37656d-a588-49cd-8806-71f923619690.jpg" },
+                { nome: "9e3f417e-5e0a-4fe3-a89a-3e80dcf1a785", url: "https://i.postimg.cc/N99GZ8F0/9e3f417e-5e0a-4fe3-a89a-3e80dcf1a785.jpg" },
+                { nome: "7401c5a5-0c38-44b7-a0ff-a699d7eafbae", url: "https://i.postimg.cc/Xp0NDCby/7401c5a5-0c38-44b7-a0ff-a699d7eafbae.jpg" },
+                { nome: "ba856130-d45c-412f-bf4d-cdf2a9fba119", url: "https://i.postimg.cc/LJ99mFh6/ba856130-d45c-412f-bf4d-cdf2a9fba119.jpg" },
+                { nome: "a4033097-dc95-4877-90f7-b2478f490b00", url: "https://i.postimg.cc/sGPzRTr3/a4033097-dc95-4877-90f7-b2478f490b00.jpg" },
+
+                // --- NOVAS IMAGENS (adicionadas ao final) ---
+                { nome: "36bca29f-254f-4843-92e3-3160b2f53ca4", url: "https://i.postimg.cc/6TBHKCvb/36bca29f-254f-4843-92e3-3160b2f53ca4.jpg" },
+                { nome: "cc884ae4-1df0-46e0-8a52-49b4881e1445", url: "https://i.postimg.cc/5Hw3dt9T/cc884ae4-1df0-46e0-8a52-49b4881e1445.jpg" },
+                { nome: "fef42eb1-71ef-402c-8f96-0db6349d1030", url: "https://i.postimg.cc/K4c5wxX2/fef42eb1-71ef-402c-8f96-0db6349d1030.jpg" },
+                { nome: "3e2e89b3-9e63-4866-afc3-b247a4114cb2", url: "https://i.postimg.cc/ct6wH1Zr/3e2e89b3-9e63-4866-afc3-b247a4114cb2.jpg" },
+                { nome: "be4d2463-5ec1-4210-86d2-7b9d40b18d55", url: "https://i.postimg.cc/r0ZRv6W6/be4d2463-5ec1-4210-86d2-7b9d40b18d55.jpg" },
+                { nome: "00678f86-bae3-4140-a46b-606f94aa6690", url: "https://i.postimg.cc/0z1Kg06j/00678f86-bae3-4140-a46b-606f94aa6690.jpg" },
+                { nome: "ca2e5592-919f-49a6-8f13-3a7ed19b6556", url: "https://i.postimg.cc/tZc7B3Q9/ca2e5592-919f-49a6-8f13-3a7ed19b6556.jpg" },
+                { nome: "298b0928-7146-44d2-b4ae-5abba863a067", url: "https://i.postimg.cc/628p487j/298b0928-7146-44d2-b4ae-5abba863a067.jpg" },
+                { nome: "58cb21a5-7a53-4163-8cfa-73fc70e608f1", url: "https://i.postimg.cc/LJm4BCYw/58cb21a5-7a53-4163-8cfa-73fc70e608f1.jpg" }
+            ];
+
+            // ===== ELEMENTOS DOM =====
+            const bannerWrapper = document.getElementById('banner-wrapper');
+            const banner = document.getElementById('banner');
+            const midiaContainer = document.getElementById('midia-container');
+            const previewConteudo = document.getElementById('preview-conteudo');
+
+            const empresaInput = document.getElementById('empresa');
+            const contatoInput = document.getElementById('contato');
+            const temaInput = document.getElementById('tema');
+            const descricaoInput = document.getElementById('descricao');
+            const logoInput = document.getElementById('logo');
+            const posicaoLogo = document.getElementById('posicao-logo');
+            const posicaoContato = document.getElementById('posicao-contato');
+            const posicaoConteudo = document.getElementById('posicao-conteudo');
+            const alinhamentoTitulo = document.getElementById('alinhamento-titulo');
+            const gerarBtn = document.getElementById('gerar');
+            const salvarImagemBtn = document.getElementById('salvar-imagem');
+            const resetarBtn = document.getElementById('resetar');
+            const toast = document.getElementById('toast');
+
+            const logoArea = document.getElementById('logo-area');
+            const topoBanner = document.getElementById('topo-banner');
+            const meioBanner = document.getElementById('meio-banner');
+            const tagsContainer = document.getElementById('tags-container');
+            const listaTags = document.getElementById('lista-lancamentos');
+            const inputLancamento = document.getElementById('input-lancamento');
+            const addLancamentoBtn = document.getElementById('add-lancamento');
+
+            const bannerEmpresa = document.getElementById('banner-empresa');
+            const bannerContato = document.getElementById('banner-contato');
+            const bannerTitulo = document.getElementById('banner-titulo');
+            const bannerDescricao = document.getElementById('banner-descricao');
+
+            // ===== ELEMENTOS DA GALERIA =====
+            const galeriaImagens = document.getElementById('galeria-imagens');
+            const urlImagemManual = document.getElementById('url-imagem-manual');
+            const btnAplicarUrl = document.getElementById('btn-aplicar-url');
+            const imagemBannerTexto = document.getElementById('imagem-banner-texto');
+            const contadorImagens = document.getElementById('contador-imagens');
+
+            // ===== ELEMENTOS DO UPLOAD LOCAL =====
+            const uploadImagemLocal = document.getElementById('upload-imagem-local');
+
+            // ===== ELEMENTOS DO BANNER DE FUTEBOL =====
+            const logoEsquerdaInput = document.getElementById('logo-esquerda');
+            const logoDireitaInput = document.getElementById('logo-direita');
+            const previewEsquerda = document.getElementById('preview-esquerda');
+            const previewDireita = document.getElementById('preview-direita');
+            const horarioJogo = document.getElementById('horario-jogo');
+            const canalJogo = document.getElementById('canal-jogo');
+            const btnAdicionarFutebol = document.getElementById('btn-adicionar-futebol');
+            const futebolOverlay = document.getElementById('futebol-overlay');
+            const futebolLogoEsq = document.getElementById('futebol-logo-esq');
+            const futebolLogoDir = document.getElementById('futebol-logo-dir');
+            const futebolHora = document.getElementById('futebol-hora');
+            const futebolCanal = document.getElementById('futebol-canal');
+
+            let imagemSelecionada = null;
+            let logosFutebol = { esquerda: null, direita: null };
+            let horario = '';
+            let canal = '';
+
+            // ===== CONTROLES DE TAMANHO =====
+            const tamanhoLogo = document.getElementById('tamanho-logo');
+            const tamanhoTitulo = document.getElementById('tamanho-titulo');
+            const tamanhoDescricao = document.getElementById('tamanho-descricao');
+            const tamanhoContato = document.getElementById('tamanho-contato');
+            const tamanhoTags = document.getElementById('tamanho-tags');
+
+            const tamanhoLogoVal = document.getElementById('tamanho-logo-val');
+            const tamanhoTituloVal = document.getElementById('tamanho-titulo-val');
+            const tamanhoDescricaoVal = document.getElementById('tamanho-descricao-val');
+            const tamanhoContatoVal = document.getElementById('tamanho-contato-val');
+            const tamanhoTagsVal = document.getElementById('tamanho-tags-val');
+
+            [tamanhoLogo, tamanhoTitulo, tamanhoDescricao, tamanhoContato, tamanhoTags].forEach(slider => {
+                slider.addEventListener('input', function() {
+                    const val = this.value;
+                    const display = document.getElementById(this.id + '-val');
+                    if (display) display.textContent = val + '%';
+                    atualizarBanner();
+                });
+            });
+
+            let formatoAtual = '16/9';
+
+            const modal = document.getElementById('modal-resultado');
+            const modalImg = document.getElementById('modal-imagem');
+            const modalClose = document.getElementById('modal-close');
+            const fecharModalBtn = document.getElementById('fechar-modal');
+            let imagemCapturada = null;
+
+            // ===== FUNÇÃO PARA REMOVER FUNDO DA LOGO (BANNER DE FUTEBOL) =====
+            function removerFundoImagem(dataURL, corFundo = 'branco', tolerancia = 30) {
+                return new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        ctx.drawImage(img, 0, 0);
+
+                        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                        const data = imageData.data;
+
+                        let rAlvo, gAlvo, bAlvo;
+                        if (corFundo === 'preto') {
+                            rAlvo = 0; gAlvo = 0; bAlvo = 0;
+                        } else {
+                            rAlvo = 255; gAlvo = 255; bAlvo = 255;
+                        }
+
+                        for (let i = 0; i < data.length; i += 4) {
+                            const r = data[i];
+                            const g = data[i+1];
+                            const b = data[i+2];
+                            const dist = Math.sqrt(
+                                Math.pow(r - rAlvo, 2) +
+                                Math.pow(g - gAlvo, 2) +
+                                Math.pow(b - bAlvo, 2)
+                            );
+                            if (dist < tolerancia) {
+                                data[i+3] = 0;
+                            }
+                        }
+
+                        ctx.putImageData(imageData, 0, 0);
+                        resolve(canvas.toDataURL('image/png'));
+                    };
+                    img.onerror = () => reject('Erro ao carregar imagem');
+                    img.src = dataURL;
+                });
+            }
+
+            // ===== FUNÇÃO APLICAR IMAGEM =====
+            function aplicarImagemNoBanner(url, titulo = null) {
+                if (!url) return;
+                const img = document.createElement('img');
+                img.className = 'w-full h-full object-cover';
+                img.crossOrigin = 'anonymous';
+                img.onload = () => {
+                    midiaContainer.innerHTML = '';
+                    midiaContainer.appendChild(img);
+                    mostrarToast('Imagem aplicada!');
+                };
+                img.onerror = () => {
+                    const img2 = document.createElement('img');
+                    img2.className = 'w-full h-full object-cover';
+                    img2.src = url;
+                    img2.onload = () => {
+                        midiaContainer.innerHTML = '';
+                        midiaContainer.appendChild(img2);
+                        mostrarToast('Imagem aplicada (modo alternativo)!');
+                    };
+                    img2.onerror = () => {
+                        mostrarToast('Não foi possível carregar a imagem.');
+                    };
+                };
+                img.src = url;
+                if (img.complete && img.naturalWidth > 0) {
+                    midiaContainer.innerHTML = '';
+                    midiaContainer.appendChild(img);
+                } else {
+                    midiaContainer.innerHTML = '<div class="text-white/50 text-xs flex items-center justify-center w-full h-full">Carregando...</div>';
+                }
+
+                if (titulo) {
+                    temaInput.value = titulo;
+                }
+
+                imagemSelecionada = { titulo: titulo || 'Imagem' };
+                imagemBannerTexto.textContent = '🖼️ ' + (titulo || 'Imagem');
+                imagemBannerTexto.classList.remove('hidden');
+                atualizarBanner();
+            }
+
+            // ===== POPULAR GALERIA (COM CLIQUE ÚNICO E DUPLO CLIQUE) =====
+            function popularGaleria() {
+                galeriaImagens.innerHTML = '';
+                imagens.forEach((item, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'item-galeria';
+                    div.dataset.index = index;
+                    const img = document.createElement('img');
+                    img.crossOrigin = 'anonymous';
+                    img.src = item.url;
+                    img.onerror = function() {
+                        this.crossOrigin = null;
+                        this.src = item.url;
+                    };
+                    div.appendChild(img);
+                    const overlay = document.createElement('div');
+                    overlay.className = 'nome-overlay';
+                    overlay.textContent = item.nome;
+                    div.appendChild(overlay);
+
+                    div.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        aplicarImagemNoBanner(item.url, item.nome);
+                    });
+
+                    div.addEventListener('dblclick', function(e) {
+                        e.stopPropagation();
+                        const idx = parseInt(this.dataset.index);
+                        if (idx >= 0 && idx < imagens.length) {
+                            imagens.splice(idx, 1);
+                            popularGaleria();
+                            mostrarToast('Imagem removida da galeria');
+                        }
+                    });
+
+                    galeriaImagens.appendChild(div);
+                });
+                contadorImagens.textContent = imagens.length + ' imagens';
+            }
+
+            popularGaleria();
+
+            // ===== FUNÇÃO APLICAR URL MANUAL =====
+            btnAplicarUrl.addEventListener('click', function() {
+                const url = urlImagemManual.value.trim();
+                if (url) {
+                    aplicarImagemNoBanner(url, 'Imagem manual');
+                } else {
+                    mostrarToast('Cole uma URL válida.');
+                }
+            });
+
+            // ===== FUNÇÃO UPLOAD IMAGEM LOCAL (ADICIONA À GALERIA E APLICA AO BANNER) =====
+            uploadImagemLocal.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const dataUrl = event.target.result;
+                    const nome = file.name.replace(/\.[^/.]+$/, '') + ' (upload)';
+                    
+                    // Adiciona à lista de imagens (para ficar na galeria)
+                    imagens.push({ nome: nome, url: dataUrl });
+                    
+                    // Aplica ao banner
+                    aplicarImagemNoBanner(dataUrl, nome);
+                    
+                    // Recarrega a galeria para mostrar a nova imagem
+                    popularGaleria();
+                    
+                    mostrarToast('Imagem adicionada à galeria e aplicada ao banner!');
+                };
+                reader.readAsDataURL(file);
+                this.value = ''; // permite re-selecionar o mesmo arquivo
+            });
+
+            // ===== FUNÇÃO ATUALIZAR BANNER =====
+            function atualizarBanner() {
+                const empresa = empresaInput.value.trim() || 'TV Nova Juarez';
+                const contato = contatoInput.value.trim() || '(21) 97751-9001';
+                const tema = temaInput.value.trim() || 'Título do Banner';
+                const descricao = descricaoInput.value.trim() || 'Descrição do conteúdo';
+
+                bannerEmpresa.textContent = empresa;
+                bannerContato.textContent = contato;
+                bannerTitulo.textContent = tema;
+                bannerDescricao.textContent = descricao;
+
+                const logoScale = parseInt(tamanhoLogo.value) / 100;
+                const tituloScale = parseInt(tamanhoTitulo.value) / 100;
+                const descScale = parseInt(tamanhoDescricao.value) / 100;
+                const contatoScale = parseInt(tamanhoContato.value) / 100;
+                const tagsScale = parseInt(tamanhoTags.value) / 100;
+
+                const baseLogoSize = Math.min(banner.clientWidth || 400, banner.clientHeight || 300) * 0.12;
+                const logoSize = baseLogoSize * logoScale;
+                logoArea.style.width = logoSize + 'px';
+                logoArea.style.height = logoSize + 'px';
+
+                const baseTitleSize = Math.min(banner.clientWidth || 400, banner.clientHeight || 300) * 0.055;
+                bannerTitulo.style.fontSize = (baseTitleSize * tituloScale) + 'px';
+
+                const baseDescSize = Math.min(banner.clientWidth || 400, banner.clientHeight || 300) * 0.025;
+                bannerDescricao.style.fontSize = (baseDescSize * descScale) + 'px';
+
+                const baseContatoSize = Math.min(banner.clientWidth || 400, banner.clientHeight || 300) * 0.025;
+                bannerEmpresa.style.fontSize = (baseContatoSize * contatoScale) + 'px';
+
+                const iconEl = document.querySelector('.whatsapp-icon i');
+                if (iconEl) {
+                    const iconSize = Math.min(banner.clientWidth || 400, banner.clientHeight || 300) * 0.03 * contatoScale;
+                    iconEl.style.fontSize = iconSize + 'px';
+                }
+                const numeroEl = document.querySelector('.whatsapp-icon .numero');
+                if (numeroEl) {
+                    numeroEl.style.fontSize = (baseContatoSize * contatoScale * 0.95) + 'px';
+                }
+
+                const tagsList = document.querySelectorAll('#lista-lancamentos .tag-item');
+                const tagTexts = [];
+                tagsList.forEach(tag => {
+                    const text = tag.querySelector('span').textContent;
+                    tagTexts.push(text);
+                });
+                tagsContainer.innerHTML = '';
+                if (tagTexts.length === 0) {
+                    ['🌟 Lançamento', '🔥 Novo'].forEach(text => {
+                        const span = document.createElement('span');
+                        span.className = 'tag-lancamento';
+                        span.textContent = text;
+                        tagsContainer.appendChild(span);
+                    });
+                } else {
+                    tagTexts.forEach(text => {
+                        const span = document.createElement('span');
+                        span.className = 'tag-lancamento';
+                        span.textContent = text;
+                        tagsContainer.appendChild(span);
+                    });
+                }
+                const newTags = document.querySelectorAll('#tags-container .tag-lancamento');
+                const baseTagSize = Math.min(banner.clientWidth || 400, banner.clientHeight || 300) * 0.018;
+                newTags.forEach(tag => {
+                    tag.style.fontSize = (baseTagSize * tagsScale) + 'px';
+                    tag.style.padding = (0.15 * tagsScale) + 'rem ' + (0.6 * tagsScale) + 'rem';
+                });
+
+                const posLogo = posicaoLogo.value;
+                logoArea.className = 'logo-area flex items-center justify-center bg-white/10 rounded-xl border border-white/20 backdrop-blur-sm';
+                const topo = document.getElementById('topo-banner');
+                topo.className = 'topo-banner flex justify-between items-start';
+                if (posLogo === 'topo-esquerda') {
+                    topo.classList.add('justify-start');
+                    logoArea.style.order = '1';
+                    document.getElementById('contato-area').style.order = '2';
+                } else if (posLogo === 'topo-centro') {
+                    topo.classList.add('justify-center');
+                    logoArea.style.order = '1';
+                    document.getElementById('contato-area').style.order = '2';
+                } else if (posLogo === 'topo-direita') {
+                    topo.classList.add('justify-end');
+                    logoArea.style.order = '1';
+                    document.getElementById('contato-area').style.order = '2';
+                } else if (posLogo === 'meio-esquerda') {
+                    topo.classList.add('justify-between', 'items-center');
+                    logoArea.style.order = '1';
+                    document.getElementById('contato-area').style.order = '2';
+                } else if (posLogo === 'meio-centro') {
+                    topo.classList.add('justify-center', 'items-center');
+                    logoArea.style.order = '1';
+                    document.getElementById('contato-area').style.order = '2';
+                } else if (posLogo === 'meio-direita') {
+                    topo.classList.add('justify-between', 'items-center');
+                    logoArea.style.order = '2';
+                    document.getElementById('contato-area').style.order = '1';
+                } else if (posLogo === 'rodape-esquerda') {
+                    topo.classList.add('justify-start', 'items-end');
+                    logoArea.style.order = '1';
+                    document.getElementById('contato-area').style.order = '2';
+                } else if (posLogo === 'rodape-centro') {
+                    topo.classList.add('justify-center', 'items-end');
+                    logoArea.style.order = '1';
+                    document.getElementById('contato-area').style.order = '2';
+                } else if (posLogo === 'rodape-direita') {
+                    topo.classList.add('justify-end', 'items-end');
+                    logoArea.style.order = '1';
+                    document.getElementById('contato-area').style.order = '2';
+                }
+
+                const posConteudo = posicaoConteudo.value;
+                meioBanner.classList.remove('conteudo-topo', 'conteudo-centro', 'conteudo-fundo');
+                if (posConteudo === 'topo') meioBanner.classList.add('conteudo-topo');
+                else if (posConteudo === 'fundo') meioBanner.classList.add('conteudo-fundo');
+                else meioBanner.classList.add('conteudo-centro');
+
+                meioBanner.classList.remove('titulo-esquerda', 'titulo-centro', 'titulo-direita');
+                const alinhamento = alinhamentoTitulo.value;
+                if (alinhamento === 'esquerda') meioBanner.classList.add('titulo-esquerda');
+                else if (alinhamento === 'direita') meioBanner.classList.add('titulo-direita');
+                else meioBanner.classList.add('titulo-centro');
+            }
+
+            // ===== PREVIEW DAS LOGOS DE FUTEBOL COM REMOÇÃO DE FUNDO =====
+            function previewLogoComRemocao(input, previewDiv, lado) {
+                const file = input.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    const dataUrl = e.target.result;
+                    try {
+                        const dataUrlSemFundo = await removerFundoImagem(dataUrl, 'branco', 30);
+                        previewDiv.innerHTML = `<img src="${dataUrlSemFundo}" alt="Logo ${lado}" style="background: transparent;" />`;
+                        if (lado === 'esquerda') {
+                            logosFutebol.esquerda = dataUrlSemFundo;
+                        } else {
+                            logosFutebol.direita = dataUrlSemFundo;
+                        }
+                        mostrarToast(`Logo ${lado} carregada com fundo transparente!`);
+                    } catch (err) {
+                        console.error(err);
+                        previewDiv.innerHTML = `<img src="${dataUrl}" alt="Logo ${lado}" />`;
+                        if (lado === 'esquerda') {
+                            logosFutebol.esquerda = dataUrl;
+                        } else {
+                            logosFutebol.direita = dataUrl;
+                        }
+                        mostrarToast(`Logo ${lado} carregada (sem remoção de fundo).`);
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+
+            logoEsquerdaInput.addEventListener('change', function() {
+                previewLogoComRemocao(this, previewEsquerda, 'esquerda');
+            });
+
+            logoDireitaInput.addEventListener('change', function() {
+                previewLogoComRemocao(this, previewDireita, 'direita');
+            });
+
+            // ===== ADICIONAR FUTEBOL AO BANNER (OVERLAY) =====
+            btnAdicionarFutebol.addEventListener('click', function() {
+                horario = horarioJogo.value.trim();
+                canal = canalJogo.value.trim();
+
+                if (!logosFutebol.esquerda && !logosFutebol.direita) {
+                    mostrarToast('Carregue pelo menos uma logo de time!');
+                    return;
+                }
+
+                if (logosFutebol.esquerda) {
+                    futebolLogoEsq.src = logosFutebol.esquerda;
+                    futebolLogoEsq.style.display = 'block';
+                } else {
+                    futebolLogoEsq.style.display = 'none';
+                }
+                if (logosFutebol.direita) {
+                    futebolLogoDir.src = logosFutebol.direita;
+                    futebolLogoDir.style.display = 'block';
+                } else {
+                    futebolLogoDir.style.display = 'none';
+                }
+                futebolHora.textContent = horario || '--:--';
+                futebolCanal.textContent = canal || 'Canal';
+
+                futebolOverlay.classList.add('active');
+                mostrarToast('Banner de futebol adicionado com sucesso!');
+            });
+
+            // ===== TOAST =====
+            let toastTimeout;
+
+            function mostrarToast(msg) {
+                toast.textContent = msg;
+                toast.classList.add('show');
+                clearTimeout(toastTimeout);
+                toastTimeout = setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
+
+            // ===== CAPTURAR BANNER =====
+            async function capturarBanner() {
+                try {
+                    const canvas = await html2canvas(banner, {
+                        scale: 2,
+                        useCORS: true,
+                        allowTaint: true,
+                        backgroundColor: '#1a1a1a',
+                        logging: false
+                    });
+                    return canvas.toDataURL('image/png');
+                } catch (err) {
+                    throw err;
+                }
+            }
+
+            async function salvarImagem() {
+                try {
+                    const dataUrl = await capturarBanner();
+                    const link = document.createElement('a');
+                    link.download = `banner-tnjuarez-${Date.now()}.png`;
+                    link.href = dataUrl;
+                    link.click();
+                    mostrarToast('Imagem salva! 📸');
+                } catch (err) {
+                    alert('Erro ao salvar imagem: ' + err.message);
+                }
+            }
+
+            // ===== EVENTOS DOS BOTÕES =====
+            gerarBtn.addEventListener('click', function() {
+                atualizarBanner();
+                mostrarToast('Banner atualizado!');
+            });
+
+            salvarImagemBtn.addEventListener('click', salvarImagem);
+
+            // ===== MODAL =====
+            function fecharModal() {
+                modal.classList.remove('active');
+            }
+            modalClose.addEventListener('click', fecharModal);
+            fecharModalBtn.addEventListener('click', fecharModal);
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) fecharModal();
+            });
+
+            // ===== RESETAR =====
+            resetarBtn.addEventListener('click', function() {
+                empresaInput.value = '';
+                contatoInput.value = '';
+                temaInput.value = '';
+                descricaoInput.value = '';
+                logoInput.value = '';
+                logoArea.innerHTML = '<span class="text-white/50 text-xs">Logo</span>';
+                posicaoLogo.value = 'topo-esquerda';
+                posicaoContato.value = 'topo-direita';
+                posicaoConteudo.value = 'centro';
+                alinhamentoTitulo.value = 'centro';
+                listaTags.innerHTML = '';
+                inputLancamento.value = '';
+                midiaContainer.innerHTML = '';
+                const img = document.createElement('img');
+                img.src = 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80';
+                img.className = 'w-full h-full object-cover';
+                midiaContainer.appendChild(img);
+                previewConteudo.innerHTML = '';
+                previewConteudo.classList.add('hidden');
+                // Reset futebol
+                logoEsquerdaInput.value = '';
+                logoDireitaInput.value = '';
+                previewEsquerda.innerHTML = '<span class="placeholder">Logo</span>';
+                previewDireita.innerHTML = '<span class="placeholder">Logo</span>';
+                horarioJogo.value = '';
+                canalJogo.value = '';
+                logosFutebol = { esquerda: null, direita: null };
+                horario = '';
+                canal = '';
+                futebolOverlay.classList.remove('active');
+                imagemSelecionada = null;
+                imagemBannerTexto.classList.add('hidden');
+                // Reset upload local
+                uploadImagemLocal.value = '';
+                [tamanhoLogo, tamanhoTitulo, tamanhoDescricao, tamanhoContato, tamanhoTags].forEach(s => s.value = '100');
+                [tamanhoLogoVal, tamanhoTituloVal, tamanhoDescricaoVal, tamanhoContatoVal, tamanhoTagsVal].forEach(d => d
+                    .textContent = '100%');
+                formatos.forEach(b => b.classList.remove('active'));
+                document.querySelector('.formato-option input[value="16/9"]').closest('.formato-option').classList.add(
+                    'active');
+                formatoAtual = '16/9';
+                banner.style.aspectRatio = '16 / 9';
+                bannerWrapper.style.maxWidth = '900px';
+                atualizarBanner();
+                mostrarToast('Tudo limpo!');
+            });
+
+            // ===== ADICIONAR TAG =====
+            function adicionarLancamento() {
+                const texto = inputLancamento.value.trim();
+                if (!texto) return;
+                const div = document.createElement('div');
+                div.className = 'tag-item';
+                div.innerHTML = `
+                    <span>${texto}</span>
+                    <span class="remove-tag" title="Remover tag">×</span>
+                `;
+                div.querySelector('.remove-tag').addEventListener('click', function() {
+                    div.remove();
+                    atualizarBanner();
+                    mostrarToast('Tag removida');
+                });
+                listaTags.appendChild(div);
+                inputLancamento.value = '';
+                atualizarBanner();
+                mostrarToast('Tag adicionada!');
+            }
+            addLancamentoBtn.addEventListener('click', adicionarLancamento);
+            inputLancamento.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    adicionarLancamento();
+                }
+            });
+
+            // ===== FORMATOS =====
+            const formatos = document.querySelectorAll('.formato-option');
+            formatos.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    formatos.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    const ratio = this.querySelector('input').value;
+                    formatoAtual = ratio;
+                    const [w, h] = ratio.split('/').map(Number);
+                    banner.style.aspectRatio = `${w} / ${h}`;
+                    bannerWrapper.style.maxWidth = '900px';
+                    mostrarToast(`Formato alterado para ${ratio}`);
+                });
+            });
+
+            // ===== INICIALIZAÇÃO =====
+            const imgPadrao = document.createElement('img');
+            imgPadrao.src = 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80';
+            imgPadrao.className = 'w-full h-full object-cover';
+            imgPadrao.crossOrigin = 'anonymous';
+            midiaContainer.appendChild(imgPadrao);
+            banner.style.aspectRatio = '16 / 9';
+            bannerWrapper.style.maxWidth = '900px';
+            atualizarBanner();
+
+            const inputsRealtime = [empresaInput, contatoInput, temaInput, descricaoInput,
+                posicaoLogo, posicaoContato, posicaoConteudo, alinhamentoTitulo
+            ];
+            inputsRealtime.forEach(input => {
+                input.addEventListener('input', atualizarBanner);
+                input.addEventListener('change', atualizarBanner);
+            });
+
+            logoInput.addEventListener('change', (e) => {
+                const arquivo = e.target.files[0];
+                if (!arquivo) return;
+                const leitor = new FileReader();
+                leitor.onload = (event) => {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = () => {
+                        logoArea.innerHTML = '';
+                        logoArea.appendChild(img);
+                        img.classList.add('w-full', 'h-full', 'object-contain', 'rounded-lg');
+                        mostrarToast('Logo carregada!');
+                    };
+                };
+                leitor.readAsDataURL(arquivo);
+            });
+
+            console.log('TNJBANNER - com novas imagens e upload local adicionando à galeria!');
+        })();
+    </script>
+</body>
+</html>
