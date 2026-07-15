@@ -1319,9 +1319,9 @@
             const { jsPDF } = window.jspdf;
 
             // ===== CHAVE DO UNSPLASH (pública, para demonstração) =====
-            const UNSPLASH_ACCESS_KEY = 'wV2uZQlRj9I1L5fKx3pE7mN8oB6sC4dA9gH0jK2lM5nP3qR7sT'; // Substitua pela sua chave se necessário
+            const UNSPLASH_ACCESS_KEY = 'wV2uZQlRj9I1L5fKx3pE7mN8oB6sC4dA9gH0jK2lM5nP3qR7sT';
 
-            // ===== LISTA DE IMAGENS (base) =====
+            // ===== LISTA DE IMAGENS (base) com todas as novas adicionadas =====
             const imagensBase = [
                 // --- IMAGENS EXISTENTES (mantidas) ---
                 { nome: "images-(61)", url: "https://i.postimg.cc/181jhTZ5/images-(61).jpg" },
@@ -1606,7 +1606,7 @@
                 { nome: "ba856130-d45c-412f-bf4d-cdf2a9fba119", url: "https://i.postimg.cc/LJ99mFh6/ba856130-d45c-412f-bf4d-cdf2a9fba119.jpg" },
                 { nome: "a4033097-dc95-4877-90f7-b2478f490b00", url: "https://i.postimg.cc/sGPzRTr3/a4033097-dc95-4877-90f7-b2478f490b00.jpg" },
 
-                // --- NOVAS IMAGENS (fornecidas) ---
+                // --- NOVAS IMAGENS (adicionadas recentemente) ---
                 { nome: "3f255dce-58df-4d11-ab95-cd11c7328037", url: "https://i.postimg.cc/VrGkt468/3f255dce-58df-4d11-ab95-cd11c7328037.jpg" },
                 { nome: "0e634fab-100f-42fa-8f92-77d27a506967", url: "https://i.postimg.cc/PCQhZK3F/0e634fab-100f-42fa-8f92-77d27a506967.jpg" },
                 { nome: "845e8b96-eaa0-40a6-830d-698b54513847", url: "https://i.postimg.cc/k6zd9HGS/845e8b96-eaa0-40a6-830d-698b54513847.jpg" },
@@ -1616,8 +1616,48 @@
                 { nome: "bc3ffe9a-368b-4745-b537-8b08ef6bc6ee", url: "https://i.postimg.cc/jW11J7Tt/bc3ffe9a-368b-4745-b537-8b08ef6bc6ee.jpg" },
                 { nome: "15b9d000-3ebf-419e-88d4-5d8f33a23a77", url: "https://i.postimg.cc/Tpx4mxzp/15b9d000-3ebf-419e-88d4-5d8f33a23a77.jpg" },
                 { nome: "1903e5ac-bf89-434b-8447-acf57ea21b9f", url: "https://i.postimg.cc/wtnWBYXZ/1903e5ac-bf89-434b-8447-acf57ea21b9f.jpg" },
-                // As URLs com "images-(17)" etc. já existem na lista, mas vamos garantir que estão incluídas (já estão nas existentes)
-                // As demais URLs repetidas (images-(3) etc.) já estão na lista, evitamos duplicatas.
+
+                // --- NOVÍSSIMAS IMAGENS (39 fornecidas agora) ---
+                { nome: "0ab3c213-8960-4724-9531-300358eb3979", url: "https://i.postimg.cc/0MvdHY7L/0ab3c213-8960-4724-9531-300358eb3979.jpg" },
+                { nome: "0e429186-aea8-4426-997f-730ef6a9e065", url: "https://i.postimg.cc/HrftbDnW/0e429186-aea8-4426-997f-730ef6a9e065.jpg" },
+                { nome: "11482953-60e7-4a75-98ce-1940f3d8eec9", url: "https://i.postimg.cc/LJrVjK5j/11482953-60e7-4a75-98ce-1940f3d8eec9.jpg" },
+                { nome: "3149705e-7dee-46a8-a076-34e57303415d", url: "https://i.postimg.cc/SnXrXNSs/3149705e-7dee-46a8-a076-34e57303415d.jpg" },
+                { nome: "39b3e3c6-d62b-49d0-9b5c-e7cf74b8f372", url: "https://i.postimg.cc/HrftbDnL/39b3e3c6-d62b-49d0-9b5c-e7cf74b8f372.jpg" },
+                { nome: "3a82bb5b-d1c5-4e06-8cf1-371fe0678103", url: "https://i.postimg.cc/zyLjLXzG/3a82bb5b-d1c5-4e06-8cf1-371fe0678103.jpg" },
+                { nome: "3be0debb-0373-45b8-bedb-292ea723f2ce", url: "https://i.postimg.cc/vgyLSrWy/3be0debb-0373-45b8-bedb-292ea723f2ce.jpg" },
+                { nome: "42d1fbdf-d34e-43c9-b751-ea86346a9320", url: "https://i.postimg.cc/TKZcnM1L/42d1fbdf-d34e-43c9-b751-ea86346a9320.jpg" },
+                { nome: "494309e3-c9f3-4293-bda8-5f423ca27c38", url: "https://i.postimg.cc/SXCfrTz0/494309e3-c9f3-4293-bda8-5f423ca27c38.jpg" },
+                { nome: "4c9187f5-7abb-4e6e-aca7-e8a04e99dff1", url: "https://i.postimg.cc/pmgBKbrQ/4c9187f5-7abb-4e6e-aca7-e8a04e99dff1.jpg" },
+                { nome: "4de16942-ff80-44e8-b8ff-61633ec0f820", url: "https://i.postimg.cc/G4Zjvwt9/4de16942-ff80-44e8-b8ff-61633ec0f820.jpg" },
+                { nome: "59c055da-0f7b-414b-8350-f64437eb12e0", url: "https://i.postimg.cc/sMtJ5dxY/59c055da-0f7b-414b-8350-f64437eb12e0.jpg" },
+                { nome: "5a5302a4-cdd4-4ed1-aa38-6f697480421b", url: "https://i.postimg.cc/PCBM1sJZ/5a5302a4-cdd4-4ed1-aa38-6f697480421b.jpg" },
+                { nome: "5e14d633-9e88-4cf5-bb16-5eb18b69941c", url: "https://i.postimg.cc/gXpqBV3t/5e14d633-9e88-4cf5-bb16-5eb18b69941c.jpg" },
+                { nome: "667c4276-2f1c-4446-85e3-37cefee601e6", url: "https://i.postimg.cc/mPcwc2Ls/667c4276-2f1c-4446-85e3-37cefee601e6.jpg" },
+                { nome: "673bbc0b-4e2f-4d2c-8817-d65620fa9928", url: "https://i.postimg.cc/TygJ975z/673bbc0b-4e2f-4d2c-8817-d65620fa9928.jpg" },
+                { nome: "680e6d95-8398-4579-83f8-575805001fd0", url: "https://i.postimg.cc/yJcyPQ3v/680e6d95-8398-4579-83f8-575805001fd0.jpg" },
+                { nome: "6811a8e2-9614-4496-abcb-facfc1b50511", url: "https://i.postimg.cc/mP0S7fkj/6811a8e2-9614-4496-abcb-facfc1b50511.jpg" },
+                { nome: "739c8270-3163-4e90-b8fa-447f6cdfc06f", url: "https://i.postimg.cc/ygKXrm05/739c8270-3163-4e90-b8fa-447f6cdfc06f.jpg" },
+                { nome: "740401e1-5acf-4ef3-ae16-f74295342712", url: "https://i.postimg.cc/zLKFjtH2/740401e1-5acf-4ef3-ae16-f74295342712.jpg" },
+                { nome: "819382c7-a677-402a-8839-fd5602969fe5", url: "https://i.postimg.cc/cvVcfyCs/819382c7-a677-402a-8839-fd5602969fe5.jpg" },
+                { nome: "873f42f8-7b15-4d77-8b95-599fbf430beb", url: "https://i.postimg.cc/68DhCJq3/873f42f8-7b15-4d77-8b95-599fbf430beb.jpg" },
+                { nome: "901ecffc-c7b3-4824-9f32-7757643d21be", url: "https://i.postimg.cc/Ff3VZWk8/901ecffc-c7b3-4824-9f32-7757643d21be.jpg" },
+                { nome: "9102b8b2-6fcf-422d-bc46-cd3765b56292", url: "https://i.postimg.cc/JD8cdNjS/9102b8b2-6fcf-422d-bc46-cd3765b56292.jpg" },
+                { nome: "950208db-58b9-4da8-a5f9-a09c4e92663f", url: "https://i.postimg.cc/FY2x05zf/950208db-58b9-4da8-a5f9-a09c4e92663f.jpg" },
+                { nome: "98b289a9-957f-4d2c-89d3-435c5824addb", url: "https://i.postimg.cc/R3KLRsJf/98b289a9-957f-4d2c-89d3-435c5824addb.jpg" },
+                { nome: "a14c2cc6-5bf0-4c30-9c7b-84cf9f41151e", url: "https://i.postimg.cc/nX61qbrr/a14c2cc6-5bf0-4c30-9c7b-84cf9f41151e.jpg" },
+                { nome: "a92b70e1-13e7-49f4-b178-d7ad96a5453c", url: "https://i.postimg.cc/hXJrJPDv/a92b70e1-13e7-49f4-b178-d7ad96a5453c.jpg" },
+                { nome: "add6b05e-334a-4e59-86df-2c09b6efac8a", url: "https://i.postimg.cc/JyZ5q6Hp/add6b05e-334a-4e59-86df-2c09b6efac8a.jpg" },
+                { nome: "ade115df-4180-43f7-9710-72923cee622a", url: "https://i.postimg.cc/d7rjBHZx/ade115df-4180-43f7-9710-72923cee622a.jpg" },
+                { nome: "aeefee81-3830-4ab4-bef8-be402fd7c444", url: "https://i.postimg.cc/f3mfK20Q/aeefee81-3830-4ab4-bef8-be402fd7c444.jpg" },
+                { nome: "b01485cd-313e-4348-b7b2-5f47e6c83ebe", url: "https://i.postimg.cc/18gHg5m5/b01485cd-313e-4348-b7b2-5f47e6c83ebe.jpg" },
+                { nome: "b4ec555f-79d7-4643-a81b-60be7f5004de", url: "https://i.postimg.cc/SXCfrTY6/b4ec555f-79d7-4643-a81b-60be7f5004de.jpg" },
+                { nome: "b76f4d1f-007d-4339-8922-0bf6de4a02b6", url: "https://i.postimg.cc/yJcyPQ3j/b76f4d1f-007d-4339-8922-0bf6de4a02b6.jpg" },
+                { nome: "d2527a5c-56e3-4d99-b293-d49808a12079", url: "https://i.postimg.cc/v4pv5FTb/d2527a5c-56e3-4d99-b293-d49808a12079.jpg" },
+                { nome: "dc8d0fca-a98e-4734-b391-afd05646f589", url: "https://i.postimg.cc/K1d5tSjr/dc8d0fca-a98e-4734-b391-afd05646f589.jpg" },
+                { nome: "f1070b3f-576b-4d51-ba84-e24d9c39fef7", url: "https://i.postimg.cc/bGk9TCS5/f1070b3f-576b-4d51-ba84-e24d9c39fef7.jpg" },
+                { nome: "f7fd3800-ba28-4c76-bd6c-b82b51fb4786", url: "https://i.postimg.cc/WDgwnWq9/f7fd3800-ba28-4c76-bd6c-b82b51fb4786.jpg" },
+                { nome: "fc5d901a-8540-434c-8328-2616ad238de2", url: "https://i.postimg.cc/jDGhy02T/fc5d901a-8540-434c-8328-2616ad238de2.jpg" },
+                { nome: "fdcc65fb-2f33-4c6f-8b33-a9bd64d8ff71", url: "https://i.postimg.cc/gw8HDSLH/fdcc65fb-2f33-4c6f-8b33-a9bd64d8ff71.jpg" }
             ];
 
             // ===== GERENCIAR REMOÇÕES PERMANENTES (localStorage) =====
@@ -2370,7 +2410,7 @@
                 leitor.readAsDataURL(arquivo);
             });
 
-            console.log('TNJBANNER - com novas imagens e sites recomendados para busca!');
+            console.log('TNJBANNER - com mais 39 imagens adicionadas à galeria!');
         })();
     </script>
 </body>
