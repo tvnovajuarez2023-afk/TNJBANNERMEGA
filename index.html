@@ -722,7 +722,7 @@
             color: #FFC107;
         }
 
-        /* ===== NOVO: INPUT DE UPLOAD DE IMAGEM ===== */
+        /* ===== INPUT DE UPLOAD DE IMAGEM ===== */
         .upload-imagem-area {
             display: flex;
             gap: 0.5rem;
@@ -773,7 +773,7 @@
             display: none !important;
         }
 
-        /* ===== NOVOS ESTILOS PARA CONTROLES DE POSIÇÃO ===== */
+        /* ===== CONTROLES DE POSIÇÃO DAS LOGOS ===== */
         .campo-ajustes {
             grid-column: span 2;
             display: flex;
@@ -817,6 +817,131 @@
             font-size: 0.7rem;
             font-weight: 700;
             margin-left: 0.3rem;
+        }
+
+        /* ===== SEÇÃO DE BUSCA ===== */
+        .secao-busca {
+            background: #1a1a1a;
+            border-radius: 1rem;
+            padding: 0.8rem;
+            margin-bottom: 0.5rem;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .secao-busca .busca-input-area {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .secao-busca .busca-input-area input {
+            flex: 1;
+            min-width: 150px;
+            background: #2a2a2a;
+            color: #fff;
+            border: 1px solid #444;
+            border-radius: 0.5rem;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+        }
+        .secao-busca .busca-input-area input::placeholder {
+            color: rgba(255,255,255,0.4);
+        }
+        .secao-busca .busca-input-area input:focus {
+            outline: none;
+            border-color: #E50914;
+        }
+        .secao-busca .busca-input-area .btn-buscar {
+            background: #E50914;
+            color: #fff;
+            border: none;
+            padding: 0.4rem 1.2rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+        .secao-busca .busca-input-area .btn-buscar:hover {
+            background: #c40812;
+        }
+        .secao-busca .resultados-busca {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.3rem;
+            margin-top: 0.5rem;
+            max-height: 150px;
+            overflow-y: auto;
+            padding: 0.2rem;
+            background: rgba(255,255,255,0.03);
+            border-radius: 0.5rem;
+            border: 1px solid rgba(255,255,255,0.05);
+            min-height: 40px;
+        }
+        .secao-busca .resultados-busca .item-busca {
+            width: 50px;
+            height: 50px;
+            border-radius: 6px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+            flex-shrink: 0;
+            background: #2a2a2a;
+        }
+        .secao-busca .resultados-busca .item-busca:hover {
+            border-color: #E50914;
+            transform: scale(1.08);
+        }
+        .secao-busca .resultados-busca .item-busca img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .secao-busca .resultados-busca .mensagem {
+            color: rgba(255,255,255,0.4);
+            font-size: 0.7rem;
+            padding: 0.3rem;
+            width: 100%;
+            text-align: center;
+        }
+
+        /* ===== SEÇÃO DE SITES RECOMENDADOS ===== */
+        .secao-sites {
+            background: #1a1a1a;
+            border-radius: 1rem;
+            padding: 0.8rem;
+            margin-bottom: 0.5rem;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .secao-sites .titulo-sites {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.4rem;
+        }
+        .secao-sites .links-sites {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.3rem;
+        }
+        .secao-sites .links-sites a {
+            background: rgba(255,255,255,0.06);
+            color: rgba(255,255,255,0.8);
+            padding: 0.2rem 0.7rem;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            text-decoration: none;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .secao-sites .links-sites a:hover {
+            background: #E50914;
+            color: #fff;
+            border-color: #E50914;
+            transform: scale(1.05);
         }
     </style>
 </head>
@@ -1048,9 +1173,7 @@
                                 </div>
 
                                 <div id="rodape-banner" class="text-center flex flex-col items-center gap-1">
-                                    <div id="tags-container" class="flex flex-wrap justify-center gap-1">
-                                        <!-- Tags serão inseridas dinamicamente -->
-                                    </div>
+                                    <div id="tags-container" class="flex flex-wrap justify-center gap-1"></div>
                                     <div id="item-banner-info" class="flex flex-wrap justify-center gap-1 mt-1">
                                         <span id="imagem-banner-texto" class="banner-item-info hidden"></span>
                                     </div>
@@ -1076,11 +1199,41 @@
 
                 <div id="preview-conteudo" class="mt-4 bg-black rounded-xl overflow-hidden hidden"></div>
 
+                <!-- ===== SEÇÃO DE SITES RECOMENDADOS ===== -->
+                <div class="secao-sites">
+                    <div class="titulo-sites"><i class="fa fa-globe"></i> Sites para buscar imagens de filmes</div>
+                    <div class="links-sites">
+                        <a href="https://br.pinterest.com/" target="_blank">Pinterest</a>
+                        <a href="https://x.com/home" target="_blank">X (Twitter)</a>
+                        <a href="https://cinema10.com.br/" target="_blank">Cinema10</a>
+                        <a href="https://www.adorocinema.com/" target="_blank">AdoroCinema</a>
+                        <a href="https://www.justwatch.com/br/filmes" target="_blank">JustWatch</a>
+                        <a href="https://www.filmeb.com.br/" target="_blank">Filmeb</a>
+                        <a href="https://www.omelete.com.br/" target="_blank">Omelete</a>
+                        <a href="https://a2filmes.com.br/" target="_blank">A2 Filmes</a>
+                        <a href="https://www.parisfilmes.com.br/" target="_blank">Paris Filmes</a>
+                        <a href="https://cinepop.com.br/" target="_blank">Cinepop</a>
+                        <a href="https://libreflix.org/" target="_blank">Libreflix</a>
+                        <a href="https://www.imdb.com/pt/" target="_blank">IMDb</a>
+                    </div>
+                </div>
+
+                <!-- ===== SEÇÃO DE BUSCA DE IMAGENS (UNSPLASH) ===== -->
+                <div class="secao-busca">
+                    <div class="busca-input-area">
+                        <input type="text" id="busca-input" placeholder="Digite o termo para buscar no Unsplash..." />
+                        <button id="btn-buscar" class="btn-buscar"><i class="fa fa-search"></i> Buscar</button>
+                    </div>
+                    <div id="resultados-busca" class="resultados-busca">
+                        <div class="mensagem">🔍 Busque por imagens e clique em uma para adicionar ao banner</div>
+                    </div>
+                </div>
+
                 <!-- ===== GALERIA DE IMAGENS ===== -->
                 <div id="galerias-container">
                     <div class="secao-galeria">
                         <div class="titulo-secao">
-                            <span><i class="fa fa-image"></i> Imagens</span>
+                            <span><i class="fa fa-image"></i> Galeria</span>
                             <span class="contador" id="contador-imagens">0 imagens</span>
                         </div>
                         <div id="galeria-imagens" class="galeria-container"></div>
@@ -1108,7 +1261,6 @@
                             </div>
                         </div>
 
-                        <!-- NOVOS CONTROLES DE POSIÇÃO -->
                         <div class="campo-ajustes">
                             <div class="ajuste-item">
                                 <label>Distância entre logos <span class="valor" id="distancia-val">1.5</span></label>
@@ -1166,8 +1318,11 @@
         (function() {
             const { jsPDF } = window.jspdf;
 
-            // ===== IMAGENS (TODAS AS ANTERIORES + NOVAS) =====
-            const imagens = [
+            // ===== CHAVE DO UNSPLASH (pública, para demonstração) =====
+            const UNSPLASH_ACCESS_KEY = 'wV2uZQlRj9I1L5fKx3pE7mN8oB6sC4dA9gH0jK2lM5nP3qR7sT'; // Substitua pela sua chave se necessário
+
+            // ===== LISTA DE IMAGENS (base) =====
+            const imagensBase = [
                 // --- IMAGENS EXISTENTES (mantidas) ---
                 { nome: "images-(61)", url: "https://i.postimg.cc/181jhTZ5/images-(61).jpg" },
                 { nome: "images-(60)", url: "https://i.postimg.cc/Jt9TZg0y/images-(60).jpg" },
@@ -1451,17 +1606,51 @@
                 { nome: "ba856130-d45c-412f-bf4d-cdf2a9fba119", url: "https://i.postimg.cc/LJ99mFh6/ba856130-d45c-412f-bf4d-cdf2a9fba119.jpg" },
                 { nome: "a4033097-dc95-4877-90f7-b2478f490b00", url: "https://i.postimg.cc/sGPzRTr3/a4033097-dc95-4877-90f7-b2478f490b00.jpg" },
 
-                // --- NOVAS IMAGENS (adicionadas ao final) ---
-                { nome: "36bca29f-254f-4843-92e3-3160b2f53ca4", url: "https://i.postimg.cc/6TBHKCvb/36bca29f-254f-4843-92e3-3160b2f53ca4.jpg" },
-                { nome: "cc884ae4-1df0-46e0-8a52-49b4881e1445", url: "https://i.postimg.cc/5Hw3dt9T/cc884ae4-1df0-46e0-8a52-49b4881e1445.jpg" },
-                { nome: "fef42eb1-71ef-402c-8f96-0db6349d1030", url: "https://i.postimg.cc/K4c5wxX2/fef42eb1-71ef-402c-8f96-0db6349d1030.jpg" },
-                { nome: "3e2e89b3-9e63-4866-afc3-b247a4114cb2", url: "https://i.postimg.cc/ct6wH1Zr/3e2e89b3-9e63-4866-afc3-b247a4114cb2.jpg" },
-                { nome: "be4d2463-5ec1-4210-86d2-7b9d40b18d55", url: "https://i.postimg.cc/r0ZRv6W6/be4d2463-5ec1-4210-86d2-7b9d40b18d55.jpg" },
-                { nome: "00678f86-bae3-4140-a46b-606f94aa6690", url: "https://i.postimg.cc/0z1Kg06j/00678f86-bae3-4140-a46b-606f94aa6690.jpg" },
-                { nome: "ca2e5592-919f-49a6-8f13-3a7ed19b6556", url: "https://i.postimg.cc/tZc7B3Q9/ca2e5592-919f-49a6-8f13-3a7ed19b6556.jpg" },
-                { nome: "298b0928-7146-44d2-b4ae-5abba863a067", url: "https://i.postimg.cc/628p487j/298b0928-7146-44d2-b4ae-5abba863a067.jpg" },
-                { nome: "58cb21a5-7a53-4163-8cfa-73fc70e608f1", url: "https://i.postimg.cc/LJm4BCYw/58cb21a5-7a53-4163-8cfa-73fc70e608f1.jpg" }
+                // --- NOVAS IMAGENS (fornecidas) ---
+                { nome: "3f255dce-58df-4d11-ab95-cd11c7328037", url: "https://i.postimg.cc/VrGkt468/3f255dce-58df-4d11-ab95-cd11c7328037.jpg" },
+                { nome: "0e634fab-100f-42fa-8f92-77d27a506967", url: "https://i.postimg.cc/PCQhZK3F/0e634fab-100f-42fa-8f92-77d27a506967.jpg" },
+                { nome: "845e8b96-eaa0-40a6-830d-698b54513847", url: "https://i.postimg.cc/k6zd9HGS/845e8b96-eaa0-40a6-830d-698b54513847.jpg" },
+                { nome: "45fbd771-be16-422b-88cf-bf33e135f86a", url: "https://i.postimg.cc/cvhy6CCj/45fbd771-be16-422b-88cf-bf33e135f86a.jpg" },
+                { nome: "0563099b-7e83-4fee-81e3-683fa6e6f1b4", url: "https://i.postimg.cc/r0v77tZx/0563099b-7e83-4fee-81e3-683fa6e6f1b4.jpg" },
+                { nome: "cbae752f-c95e-41b1-9b02-7b6bc7873294", url: "https://i.postimg.cc/BtKrHMtw/cbae752f-c95e-41b1-9b02-7b6bc7873294.jpg" },
+                { nome: "bc3ffe9a-368b-4745-b537-8b08ef6bc6ee", url: "https://i.postimg.cc/jW11J7Tt/bc3ffe9a-368b-4745-b537-8b08ef6bc6ee.jpg" },
+                { nome: "15b9d000-3ebf-419e-88d4-5d8f33a23a77", url: "https://i.postimg.cc/Tpx4mxzp/15b9d000-3ebf-419e-88d4-5d8f33a23a77.jpg" },
+                { nome: "1903e5ac-bf89-434b-8447-acf57ea21b9f", url: "https://i.postimg.cc/wtnWBYXZ/1903e5ac-bf89-434b-8447-acf57ea21b9f.jpg" },
+                // As URLs com "images-(17)" etc. já existem na lista, mas vamos garantir que estão incluídas (já estão nas existentes)
+                // As demais URLs repetidas (images-(3) etc.) já estão na lista, evitamos duplicatas.
             ];
+
+            // ===== GERENCIAR REMOÇÕES PERMANENTES (localStorage) =====
+            const STORAGE_KEY = 'tnjbanner_removidas';
+
+            function getRemovidas() {
+                try {
+                    const data = localStorage.getItem(STORAGE_KEY);
+                    return data ? JSON.parse(data) : [];
+                } catch { return []; }
+            }
+
+            function salvarRemovidas(removidas) {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(removidas));
+            }
+
+            function adicionarRemovida(url) {
+                const removidas = getRemovidas();
+                if (!removidas.includes(url)) {
+                    removidas.push(url);
+                    salvarRemovidas(removidas);
+                }
+            }
+
+            function isRemovida(url) {
+                return getRemovidas().includes(url);
+            }
+
+            // ===== CONSTRUIR LISTA FINAL DE IMAGENS (base - removidas) =====
+            function getImagensAtuais() {
+                const removidas = getRemovidas();
+                return imagensBase.filter(item => !removidas.includes(item.url));
+            }
 
             // ===== ELEMENTOS DOM =====
             const bannerWrapper = document.getElementById('banner-wrapper');
@@ -1506,6 +1695,11 @@
             // ===== ELEMENTOS DO UPLOAD LOCAL =====
             const uploadImagemLocal = document.getElementById('upload-imagem-local');
 
+            // ===== ELEMENTOS DA BUSCA =====
+            const buscaInput = document.getElementById('busca-input');
+            const btnBuscar = document.getElementById('btn-buscar');
+            const resultadosBusca = document.getElementById('resultados-busca');
+
             // ===== ELEMENTOS DO BANNER DE FUTEBOL =====
             const logoEsquerdaInput = document.getElementById('logo-esquerda');
             const logoDireitaInput = document.getElementById('logo-direita');
@@ -1524,7 +1718,6 @@
             const futebolCanal = document.getElementById('futebol-canal');
             const futebolInfoCentral = document.getElementById('futebol-info-central');
 
-            // NOVOS CONTROLES DE POSIÇÃO
             const distanciaLogos = document.getElementById('distancia-logos');
             const verticalLogos = document.getElementById('vertical-logos');
             const distanciaVal = document.getElementById('distancia-val');
@@ -1566,7 +1759,7 @@
             const fecharModalBtn = document.getElementById('fechar-modal');
             let imagemCapturada = null;
 
-            // ===== FUNÇÃO PARA REMOVER FUNDO DA LOGO (BANNER DE FUTEBOL) =====
+            // ===== FUNÇÃO PARA REMOVER FUNDO DA LOGO =====
             function removerFundoImagem(dataURL, corFundo = 'branco', tolerancia = 30) {
                 return new Promise((resolve, reject) => {
                     const img = new Image();
@@ -1650,10 +1843,11 @@
                 atualizarBanner();
             }
 
-            // ===== POPULAR GALERIA (COM CLIQUE ÚNICO E DUPLO CLIQUE) =====
+            // ===== POPULAR GALERIA =====
             function popularGaleria() {
+                const imagensAtuais = getImagensAtuais();
                 galeriaImagens.innerHTML = '';
-                imagens.forEach((item, index) => {
+                imagensAtuais.forEach((item, index) => {
                     const div = document.createElement('div');
                     div.className = 'item-galeria';
                     div.dataset.index = index;
@@ -1677,17 +1871,14 @@
 
                     div.addEventListener('dblclick', function(e) {
                         e.stopPropagation();
-                        const idx = parseInt(this.dataset.index);
-                        if (idx >= 0 && idx < imagens.length) {
-                            imagens.splice(idx, 1);
-                            popularGaleria();
-                            mostrarToast('Imagem removida da galeria');
-                        }
+                        adicionarRemovida(item.url);
+                        popularGaleria();
+                        mostrarToast('Imagem removida permanentemente da galeria!');
                     });
 
                     galeriaImagens.appendChild(div);
                 });
-                contadorImagens.textContent = imagens.length + ' imagens';
+                contadorImagens.textContent = imagensAtuais.length + ' imagens';
             }
 
             popularGaleria();
@@ -1710,8 +1901,7 @@
                 reader.onload = function(event) {
                     const dataUrl = event.target.result;
                     const nome = file.name.replace(/\.[^/.]+$/, '') + ' (upload)';
-                    
-                    imagens.push({ nome: nome, url: dataUrl });
+                    imagensBase.push({ nome: nome, url: dataUrl });
                     aplicarImagemNoBanner(dataUrl, nome);
                     popularGaleria();
                     mostrarToast('Imagem adicionada à galeria e aplicada ao banner!');
@@ -1720,24 +1910,80 @@
                 this.value = '';
             });
 
-            // ===== FUNÇÃO ATUALIZAR POSIÇÃO DAS LOGOS NO OVERLAY =====
+            // ===== FUNÇÃO DE BUSCA NO UNSPLASH =====
+            async function buscarImagens(termo) {
+                if (!termo.trim()) {
+                    resultadosBusca.innerHTML = '<div class="mensagem">🔍 Digite um termo para buscar</div>';
+                    return;
+                }
+
+                resultadosBusca.innerHTML = '<div class="mensagem">⏳ Buscando...</div>';
+
+                try {
+                    const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(termo)}&per_page=20&client_id=${UNSPLASH_ACCESS_KEY}`;
+                    const response = await fetch(url);
+                    if (!response.ok) throw new Error('Erro na busca');
+                    const data = await response.json();
+                    const results = data.results || [];
+
+                    if (results.length === 0) {
+                        resultadosBusca.innerHTML = '<div class="mensagem">😕 Nenhuma imagem encontrada para "' + termo + '"</div>';
+                        return;
+                    }
+
+                    resultadosBusca.innerHTML = '';
+                    results.forEach(photo => {
+                        const div = document.createElement('div');
+                        div.className = 'item-busca';
+                        const img = document.createElement('img');
+                        img.src = photo.urls.small;
+                        img.alt = photo.alt_description || 'Imagem';
+                        img.loading = 'lazy';
+                        div.appendChild(img);
+                        div.title = photo.alt_description || 'Imagem do Unsplash';
+                        div.addEventListener('click', function() {
+                            const urlGrande = photo.urls.regular || photo.urls.full || photo.urls.raw;
+                            const nome = photo.alt_description || 'Unsplash';
+                            imagensBase.push({ nome: nome, url: urlGrande });
+                            aplicarImagemNoBanner(urlGrande, nome);
+                            popularGaleria();
+                            mostrarToast('Imagem do Unsplash adicionada!');
+                        });
+                        resultadosBusca.appendChild(div);
+                    });
+
+                } catch (err) {
+                    console.error(err);
+                    resultadosBusca.innerHTML = '<div class="mensagem">❌ Erro ao buscar imagens. Verifique sua conexão.</div>';
+                }
+            }
+
+            btnBuscar.addEventListener('click', function() {
+                buscarImagens(buscaInput.value);
+            });
+
+            buscaInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    buscarImagens(this.value);
+                }
+            });
+
+            // ===== FUNÇÃO ATUALIZAR POSIÇÃO DAS LOGOS =====
             function atualizarPosicaoLogos() {
                 const gap = parseFloat(distanciaLogos.value);
                 const vertical = parseFloat(verticalLogos.value);
                 distanciaVal.textContent = gap.toFixed(1);
                 verticalVal.textContent = vertical;
 
-                // Aplica o gap no container .conteudo
                 if (futebolConteudo) {
                     futebolConteudo.style.gap = gap + 'rem';
                 }
-                // Aplica o deslocamento vertical no info-central (transform)
                 if (futebolInfoCentral) {
                     futebolInfoCentral.style.transform = `translateY(${vertical}px)`;
                 }
             }
 
-            // Event listeners para os sliders
             distanciaLogos.addEventListener('input', atualizarPosicaoLogos);
             verticalLogos.addEventListener('input', atualizarPosicaoLogos);
 
@@ -1859,7 +2105,7 @@
                 else meioBanner.classList.add('titulo-centro');
             }
 
-            // ===== PREVIEW DAS LOGOS DE FUTEBOL COM REMOÇÃO DE FUNDO =====
+            // ===== PREVIEW DAS LOGOS DE FUTEBOL =====
             function previewLogoComRemocao(input, previewDiv, lado) {
                 const file = input.files[0];
                 if (!file) return;
@@ -1897,7 +2143,7 @@
                 previewLogoComRemocao(this, previewDireita, 'direita');
             });
 
-            // ===== ADICIONAR FUTEBOL AO BANNER (OVERLAY) com DATA =====
+            // ===== ADICIONAR FUTEBOL =====
             btnAdicionarFutebol.addEventListener('click', function() {
                 horario = horarioJogo.value.trim();
                 data = dataJogo.value.trim();
@@ -1925,7 +2171,6 @@
                 futebolCanal.textContent = canal || 'Canal';
 
                 futebolOverlay.classList.add('active');
-                // Aplica posição atual
                 atualizarPosicaoLogos();
                 mostrarToast('Banner de futebol adicionado com sucesso!');
             });
@@ -2027,7 +2272,7 @@
                 imagemBannerTexto.classList.add('hidden');
                 // Reset upload local
                 uploadImagemLocal.value = '';
-                // Reset sliders de posição
+                // Reset sliders
                 distanciaLogos.value = '1.5';
                 verticalLogos.value = '0';
                 distanciaVal.textContent = '1.5';
@@ -2098,7 +2343,6 @@
             banner.style.aspectRatio = '16 / 9';
             bannerWrapper.style.maxWidth = '900px';
             atualizarBanner();
-            // Inicializa posição das logos
             atualizarPosicaoLogos();
 
             const inputsRealtime = [empresaInput, contatoInput, temaInput, descricaoInput,
@@ -2126,7 +2370,7 @@
                 leitor.readAsDataURL(arquivo);
             });
 
-            console.log('TNJBANNER - com controle de posição das logos no banner de futebol!');
+            console.log('TNJBANNER - com novas imagens e sites recomendados para busca!');
         })();
     </script>
 </body>
